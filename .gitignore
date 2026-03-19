@@ -48,3 +48,4 @@ desktop.ini
 # --- 自定义资源规避 (可选) ---
 # 若你有大型原画稿件或视频素材，建议通过 Git LFS 管理，或在此排除
 # /Assets/Art_Sources/High_Poly_Models/
+Assets/ScriptTemplates
