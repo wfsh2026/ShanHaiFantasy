@@ -1,0 +1,50 @@
+﻿# --- Unity 临时与缓存文件 ---
+Library/ 
+Temp/ 
+Obj/ 
+Build/ 
+Builds/ 
+Logs/ 
+MemoryCaptures/ 
+UserSettings/ 
+
+# --- 资源导入与自动生成 ---
+Assets/AddressableAssetsData/*/*.bin*
+Assets/StreamingAssets/aa.meta
+Assets/StreamingAssets/aa/*
+
+# --- 编译器/IDE 相关 (VS/Rider/VSCode) ---
+.vs/
+.gradle/
+ExportedObj/
+.consulo/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# --- 系统生成的隐藏文件 ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- 编译输出文件 ---
+*.dll
+*.exe
+*.zip
+*.7z
+*.rar
+
+# --- 自定义资源规避 (可选) ---
+# 若你有大型原画稿件或视频素材，建议通过 Git LFS 管理，或在此排除
+# /Assets/Art_Sources/High_Poly_Models/
