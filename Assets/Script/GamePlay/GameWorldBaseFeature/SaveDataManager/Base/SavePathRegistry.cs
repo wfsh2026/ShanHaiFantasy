@@ -1,6 +1,10 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// 存档文件路径定义。
+/// 统一约束本地设置和玩家进度文件的落盘位置。
+/// </summary>
 public static class SavePathRegistry {
     private const string ROOT_FOLDER_NAME = "SaveData";
     private const string SETTINGS_FILE_NAME = "settings.json";

@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 旧版 Unity 输入系统适配层。
+/// 项目内只有这一层允许直接读取 UnityEngine.Input。
+/// </summary>
 public sealed class InputDeviceAdapter {
     public void UpdateState(InputMap inputMap, InputState inputState) {
         if (inputMap == null || inputState == null) {

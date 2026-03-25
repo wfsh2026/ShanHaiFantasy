@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// 音频配置注册表。
+/// 当前测试音频全部在这里集中注册。
+/// </summary>
 public sealed class AudioRegistry {
     private readonly Dictionary<string, AudioConfig> configDict;
 
@@ -29,6 +33,7 @@ public sealed class AudioRegistry {
     }
 
     private void RegisterDefaults() {
+        // 当前默认音频以测试和框架验证为主，后续业务音频继续按 AudioId 扩展。
         Register(new AudioConfig {
             AudioId = "test_bgm",
             BusType = AudioBusType.Bgm,

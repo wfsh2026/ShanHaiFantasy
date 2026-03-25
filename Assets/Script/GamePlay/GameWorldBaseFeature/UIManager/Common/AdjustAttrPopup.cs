@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 属性调整弹窗。
+/// 只负责显示请求内容、读取输入值并把结果回传给调用方。
+/// </summary>
 public sealed class AdjustAttrPopup : UIPanelBase {
     private Text titleText;
     private Text descriptionText;

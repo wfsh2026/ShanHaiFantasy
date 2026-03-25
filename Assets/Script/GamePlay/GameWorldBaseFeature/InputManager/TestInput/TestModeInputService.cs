@@ -1,3 +1,7 @@
+/// <summary>
+/// 测试模式输入服务。
+/// 把输入动作收口为模式逻辑调用，避免 Handler 直接处理业务细节。
+/// </summary>
 public sealed class TestModeInputService {
     private readonly GameWorld gameWorld;
 

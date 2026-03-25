@@ -3,6 +3,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// UI 根节点和层级容器。
+/// 负责创建全局 Canvas、层级节点以及事件系统。
+/// </summary>
 public sealed class UILayerRoot {
     private readonly GameObject rootObject;
     private readonly Canvas rootCanvas;

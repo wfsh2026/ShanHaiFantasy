@@ -2,6 +2,10 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(AudioSource))]
+/// <summary>
+/// 挂在物体上的音频触发器。
+/// 支持随物体启用、停用或可见性变化自动播放和停止。
+/// </summary>
 public sealed class AudioEmitter : MonoBehaviour {
     public string AudioId = "demo_emitter_loop";
     public bool PlayOnEnable = true;

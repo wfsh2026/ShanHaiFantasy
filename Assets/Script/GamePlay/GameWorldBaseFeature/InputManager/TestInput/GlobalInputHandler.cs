@@ -1,3 +1,7 @@
+/// <summary>
+/// 全局输入处理器。
+/// 当前负责属性主面板的开关快捷键。
+/// </summary>
 public sealed class GlobalInputHandler : IInputHandler {
     public bool HandleInput(InputManager inputManager, InputState inputState) {
         if (inputManager == null || inputState == null) {

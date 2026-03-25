@@ -1,3 +1,7 @@
+/// <summary>
+/// 测试模式管理器。
+/// 负责组装测试模式的 Data、Logic、Stage，并拉起对应的 UI、输入和音频演示。
+/// </summary>
 public sealed class ClientTestModeManager : ClientModeManager {
     private ClientTestModeData data;
     private ClientTestModeLogic logic;
@@ -46,6 +50,7 @@ public sealed class ClientTestModeManager : ClientModeManager {
     }
 
     private void OpenModeUI() {
+        // 测试模式启动后默认同时打开 HUD 和主属性面板，方便一起验证绑定链。
         UIManager.Instance.Open<RoleAttrHUDPanel>();
         UIManager.Instance.Open<RoleAttrPanel>();
     }

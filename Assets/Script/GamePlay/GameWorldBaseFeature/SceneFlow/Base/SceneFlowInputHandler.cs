@@ -1,3 +1,7 @@
+/// <summary>
+/// 场景流转相关的输入处理器。
+/// 当前只负责把重载场景按键转成 SceneFlow 请求。
+/// </summary>
 public sealed class SceneFlowInputHandler : IInputHandler {
     private readonly SceneFlowManager sceneFlowManager;
 

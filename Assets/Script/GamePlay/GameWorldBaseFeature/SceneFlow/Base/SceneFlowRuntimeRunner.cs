@@ -2,6 +2,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 场景切换运行时执行器。
+/// 使用常驻 MonoBehaviour 承载协程，串起 Loading、输入阻塞和场景切换。
+/// </summary>
 public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
     private static SceneFlowRuntimeRunner instance;
 
@@ -58,6 +62,7 @@ public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
         loadingContext.Step = SceneLoadingStep.ClearUI;
         loadingContext.StepText = "Clear UI";
         loadingContext.Progress = 0.15f;
+        // 进入新场景前先把旧 UI 收口，避免旧界面残留到新场景。
         if (request.ClearPopupUI) {
             UIManager.Instance.CloseByLayer(UILayer.Popup);
         }

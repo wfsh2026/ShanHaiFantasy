@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// UI 测试场景中的音频演示控制器。
+/// 用来动态创建测试发声物体，并验证 AudioEmitter 的启停行为。
+/// </summary>
 public sealed class UITestAudioDemoController : MonoBehaviour {
     private const string DEMO_OBJECT_NAME = "UITestAudioEmitterCube";
     private GameObject demoEmitterObject;

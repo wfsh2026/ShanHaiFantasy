@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// 输入路由器。
+/// 负责按上下文和优先级把当前帧输入分发给注册的 Handler。
+/// </summary>
 public sealed class InputRouter {
     private readonly Dictionary<InputContextType, List<InputHandlerEntry>> handlerMap = new Dictionary<InputContextType, List<InputHandlerEntry>>();
     private readonly List<InputContextType> activeContextsBuffer = new List<InputContextType>(8);

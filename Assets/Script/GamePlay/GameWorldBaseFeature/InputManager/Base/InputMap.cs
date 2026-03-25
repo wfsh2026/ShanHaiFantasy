@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 输入映射表。
+/// 统一维护动作与默认键位的对应关系。
+/// </summary>
 public sealed class InputMap {
     private readonly List<InputBinding> bindings = new List<InputBinding>(24);
 
@@ -13,6 +17,7 @@ public sealed class InputMap {
     }
 
     private void RegisterDefaultBindings() {
+        // 当前先覆盖测试场景里用到的核心键位，后续扩展继续集中加在这里。
         bindings.Add(InputBinding.CreateKey(InputActionId.Cancel, KeyCode.Escape));
         bindings.Add(InputBinding.CreateKey(InputActionId.Confirm, KeyCode.Return, KeyCode.Space));
         bindings.Add(InputBinding.CreateKey(InputActionId.ToggleRoleAttrPanel, KeyCode.C));

@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 配置系统唯一入口。
+/// 负责按类型加载、缓存和返回 ScriptableObject 配置实例。
+/// </summary>
 public sealed class ConfigManager {
     private static readonly ConfigManager INSTANCE = new ConfigManager();
 
@@ -81,6 +85,7 @@ public sealed class ConfigManager {
         }
 
         if (callback != null) {
+            // 同类型配置加载中的情况下，后续请求直接挂到回调队列，避免重复发起加载。
             callbacks.Add((asset) => {
                 callback.Invoke(asset as T);
             });

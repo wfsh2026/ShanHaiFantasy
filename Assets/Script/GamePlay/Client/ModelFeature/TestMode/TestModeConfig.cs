@@ -1,6 +1,10 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TestModeConfig", menuName = "ShanHaiFantasy/Config/TestModeConfig")]
+/// <summary>
+/// 测试模式配置。
+/// 只保存静态模板参数，运行时不直接修改这份配置资产。
+/// </summary>
 public sealed class TestModeConfig : ScriptableObject {
     [SerializeField] private string roleName = "Test Hero";
     [SerializeField] private string defaultStageName = "ClientTestModeStage";

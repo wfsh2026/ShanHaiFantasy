@@ -1,3 +1,6 @@
+/// <summary>
+/// 单个音频条目的静态配置。
+/// </summary>
 public sealed class AudioConfig {
     public string AudioId;
     public string AssetKey;

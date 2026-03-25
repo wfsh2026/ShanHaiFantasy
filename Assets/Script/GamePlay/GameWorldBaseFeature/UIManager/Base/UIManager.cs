@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// UI 单例入口。
+/// 统一负责界面的创建、缓存、回收、返回栈和结果回调。
+/// </summary>
 public sealed class UIManager : IUIManager {
     private static readonly UIManager INSTANCE = new UIManager();
 
@@ -47,6 +51,7 @@ public sealed class UIManager : IUIManager {
         layerRoot = new UILayerRoot();
         registry = new UIRegistry();
         loader = new UIAssetLoaderAdapter();
+        // 所有测试和基础界面的注册统一收口在这里，避免业务层散注册。
         RegisterWindows();
         isBound = true;
     }

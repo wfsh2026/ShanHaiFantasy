@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 测试模式的业务逻辑层。
+/// 负责属性增减规则、自动变化节奏以及基于 Data 的联动判断。
+/// </summary>
 public sealed class ClientTestModeLogic : AbsModeLogic {
     private const float DEFAULT_AUTO_CHANGE_INTERVAL = 2f;
     private const int DEFAULT_DRAIN_HP_DELTA = -8;
@@ -31,6 +35,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         isDrainPhase = true;
 
         if (data != null) {
+            // 逻辑层也通过 Data 做联动判断，保证所有状态变化都围绕同一份权威数据。
             data.HPValue.Bind(OnHPChanged, true);
             data.MPValue.Bind(OnMPChanged, true);
         }

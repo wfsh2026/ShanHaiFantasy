@@ -1,11 +1,19 @@
 using UnityEngine;
 
+/// <summary>
+/// 输入绑定类型。
+/// 分别对应键盘按键、轴输入和鼠标按键。
+/// </summary>
 public enum InputBindingType {
     Key = 0,
     Axis = 1,
     MouseButton = 2,
 }
 
+/// <summary>
+/// 单个输入动作的绑定定义。
+/// 负责描述某个动作如何映射到底层输入设备。
+/// </summary>
 public sealed class InputBinding {
     public InputActionId ActionId {
         get;

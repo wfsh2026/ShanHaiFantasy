@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 运行时 UI 控件工厂。
+/// 用于测试场景下直接在代码里搭建 UGUI 结构。
+/// </summary>
 public static class UIRuntimeWidgetFactory {
     private static Font defaultFont;
 
@@ -15,6 +19,7 @@ public static class UIRuntimeWidgetFactory {
 
     public static Font GetDefaultFont() {
         if (defaultFont == null) {
+            // 优先取 LegacyRuntime，保证旧版 Unity 环境下也有兜底字体。
             defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (defaultFont == null) {
                 defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf");

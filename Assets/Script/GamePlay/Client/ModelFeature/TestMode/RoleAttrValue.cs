@@ -1,5 +1,9 @@
 using System;
 
+/// <summary>
+/// 角色属性值结构。
+/// 同时保存当前值和上限值，便于 UI 和逻辑统一处理。
+/// </summary>
 public struct RoleAttrValue : IEquatable<RoleAttrValue> {
     public int Current;
     public int Max;

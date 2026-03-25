@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 角色属性主面板控制器。
+/// 负责把按钮命令转给模式逻辑，并把 Data 字段变化映射到主面板局部刷新。
+/// </summary>
 public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
     private const int QUICK_HP_VALUE = 10;
     private const int QUICK_MP_VALUE = 5;
@@ -78,6 +82,7 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
     public void OpenPopup(RoleAttrType attrType, RoleAttrOperationType operationType) {
         PlayUIButtonSound();
         if (data != null) {
+            // Popup 请求数据仍然先写回 Data，再由弹窗自己读取。
             int defaultValue = attrType == RoleAttrType.HP ? QUICK_HP_VALUE : QUICK_MP_VALUE;
             data.SetAdjustAttrRequest(GetOperationText(attrType, operationType), attrType, operationType, defaultValue);
         }

@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 音频系统唯一入口。
+/// 统一负责 BGM、音效、Bus 音量和 AudioSource 池管理。
+/// </summary>
 public sealed class AudioManager {
     private static readonly AudioManager INSTANCE = new AudioManager();
     private readonly Dictionary<string, float> busVolumeDict;
@@ -61,6 +65,7 @@ public sealed class AudioManager {
             return;
         }
 
+        // 非循环的一次性播放结束后统一在这里回收，避免业务侧自己处理生命周期。
         List<string> removeKeys = null;
         foreach (KeyValuePair<string, AudioHandle> pair in activeHandleDict) {
             AudioHandle handle = pair.Value;

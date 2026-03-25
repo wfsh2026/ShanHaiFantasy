@@ -1,3 +1,7 @@
+/// <summary>
+/// HUD 控制器。
+/// 只绑定角色属性相关字段，并把字段变化映射到 HUD 局部刷新。
+/// </summary>
 public sealed class RoleAttrHUDController : UIControllerBase<RoleAttrHUDPanel> {
     private ClientTestModeData data;
 

@@ -1,3 +1,7 @@
+/// <summary>
+/// 客户端世界入口。
+/// 负责按固定顺序挂载客户端基础模块和测试模式。
+/// </summary>
 public class GameWorldClient : System.IDisposable {
     private GameWorld gameWorld;
     private bool isStarted;
@@ -13,6 +17,7 @@ public class GameWorldClient : System.IDisposable {
 
         isStarted = true;
         gameWorld.GameState = GameWorld.GameStateType.Running;
+        // 先配置和存档，再 UI、音频、输入、场景流转，最后进入具体模式。
         gameWorld.AddExtendFeature<ClientConfigFeatureManager>();
         gameWorld.AddExtendFeature<ClientSaveDataFeatureManager>();
         gameWorld.AddExtendFeature<ClientUIFeatureManager>();

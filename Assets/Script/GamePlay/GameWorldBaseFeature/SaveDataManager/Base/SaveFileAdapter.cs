@@ -1,6 +1,10 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// 本地文件读写适配层。
+/// 只负责 JSON 读写和目录存在性处理，不承担业务规则。
+/// </summary>
 public sealed class SaveFileAdapter {
     public T Load<T>(string filePath) where T : class, new() {
         EnsureRootFolder();

@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// 场景注册表。
+/// 统一维护场景标识与默认切换配置的对应关系。
+/// </summary>
 public sealed class SceneRegistry {
     private readonly Dictionary<SceneId, SceneConfig> configById = new Dictionary<SceneId, SceneConfig>();
     private readonly Dictionary<string, SceneConfig> configByPath = new Dictionary<string, SceneConfig>();
@@ -40,6 +44,7 @@ public sealed class SceneRegistry {
     }
 
     private void RegisterDefaultConfigs() {
+        // 当前测试场景先注册到这里，后续大厅、战斗等场景继续按同样方式扩展。
         SceneConfig uiTestConfig = new SceneConfig();
         uiTestConfig.SceneId = SceneId.UITest;
         uiTestConfig.ScenePath = "Assets/Scenes/UITestScene.unity/UITestScene.unity";

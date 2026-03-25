@@ -1,3 +1,7 @@
+/// <summary>
+/// 输入系统主调度器。
+/// 负责采样输入、维护当前帧状态并把输入路由到当前激活的上下文。
+/// </summary>
 public sealed class InputManager {
     private readonly InputDeviceAdapter inputDeviceAdapter;
     private readonly InputState inputState;

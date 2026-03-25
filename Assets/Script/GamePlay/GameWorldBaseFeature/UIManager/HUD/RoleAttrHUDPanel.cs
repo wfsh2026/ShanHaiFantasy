@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 角色属性 HUD。
+/// 常驻显示角色名、阶段、时间和 HP/MP 条。
+/// </summary>
 public sealed class RoleAttrHUDPanel : UIPanelBase {
     private Text roleNameText;
     private Text stageNameText;

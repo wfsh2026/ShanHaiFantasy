@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// AudioSource 复用池。
+/// 用于管理一次性音效的临时播放源，减少频繁创建销毁。
+/// </summary>
 public sealed class AudioSourcePool {
     private readonly Transform root;
     private readonly Stack<AudioSource> sourceStack;

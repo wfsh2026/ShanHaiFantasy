@@ -5,6 +5,10 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+/// <summary>
+/// 配置资源加载适配层。
+/// 编辑器下优先走资产路径，运行时统一走 Addressables。
+/// </summary>
 public sealed class ConfigLoaderAdapter {
     public void Load(ConfigEntry entry, Action<ScriptableObject> callback) {
         if (entry == null) {

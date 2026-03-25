@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// 配置注册表。
+/// 统一维护“配置类型 -> 加载信息”的映射，避免业务层散写资源 Key。
+/// </summary>
 public sealed class ConfigRegistry {
     private readonly Dictionary<Type, ConfigEntry> configEntries;
 
@@ -46,6 +50,7 @@ public sealed class ConfigRegistry {
     }
 
     private void RegisterDefaults() {
+        // 测试模式当前只需要一份默认配置，后续其他配置继续按类型注册即可。
         Register(new ConfigEntry(typeof(TestModeConfig), "Config/TestModeConfig", "Assets/ToBundle/Configs/TestModeConfig.asset", true));
     }
 }

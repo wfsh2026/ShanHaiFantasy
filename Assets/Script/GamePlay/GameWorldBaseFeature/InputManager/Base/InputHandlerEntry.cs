@@ -1,3 +1,7 @@
+/// <summary>
+/// 输入 Handler 注册信息。
+/// 记录上下文、处理器实例以及优先级。
+/// </summary>
 public sealed class InputHandlerEntry {
     public InputContextType ContextType {
         get;

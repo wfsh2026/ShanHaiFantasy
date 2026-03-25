@@ -1,5 +1,9 @@
 using System.Globalization;
 
+/// <summary>
+/// 属性调整弹窗控制器。
+/// 负责读取当前请求数据、解析输入值并生成返回结果。
+/// </summary>
 public sealed class AdjustAttrPopupController : UIControllerBase<AdjustAttrPopup> {
     private ClientTestModeData data;
 

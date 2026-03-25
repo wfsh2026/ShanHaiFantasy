@@ -1,3 +1,7 @@
+/// <summary>
+/// 一次场景切换请求。
+/// 这里描述目标场景和本次切换使用的策略开关。
+/// </summary>
 public sealed class SceneRequest {
     public SceneId TargetSceneId;
     public bool ReloadIfSame;

@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 本地存档唯一入口。
+/// 统一管理设置数据、玩家本地数据、脏标记和 JSON 落盘。
+/// </summary>
 public sealed class SaveDataManager {
     private static readonly SaveDataManager INSTANCE = new SaveDataManager();
     private const float AUTO_SAVE_INTERVAL = 5f;
@@ -55,6 +59,7 @@ public sealed class SaveDataManager {
             return;
         }
 
+        // 脏数据统一走定时保存，避免每次修改都立即写磁盘。
         autoSaveTimer += delta;
         if (autoSaveTimer >= AUTO_SAVE_INTERVAL) {
             SaveAll();
@@ -154,6 +159,7 @@ public sealed class SaveDataManager {
     }
 
     public void ApplySettingsToRuntime() {
+        // 静音只收口到 Master，其他分组音量仍然保留用户设置值。
         float masterVolume = Settings.isMute ? 0f : Settings.masterVolume;
         AudioManager.Instance.SetBusVolume(AudioBusType.Master, masterVolume);
         AudioManager.Instance.SetBusVolume(AudioBusType.Bgm, Settings.bgmVolume);

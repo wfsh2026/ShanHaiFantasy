@@ -1,3 +1,7 @@
+/// <summary>
+/// 输入动作枚举。
+/// 业务层只识别动作，不直接识别底层按键。
+/// </summary>
 public enum InputActionId {
     None = 0,
     Cancel = 1,

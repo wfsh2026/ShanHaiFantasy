@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// 所有 Panel 的基类。
+/// 负责统一生命周期、结果回调和对 UIManager 的访问。
+/// </summary>
 public abstract class UIPanelBase : MonoBehaviour {
     private UIManager uiManager;
     private UIWindowConfig config;
@@ -50,6 +54,7 @@ public abstract class UIPanelBase : MonoBehaviour {
         gameObject.SetActive(true);
         if (!isCreated) {
             isCreated = true;
+            // OnCreate 只在第一次实例化时执行一次，避免重复创建控件。
             OnCreate();
         }
 

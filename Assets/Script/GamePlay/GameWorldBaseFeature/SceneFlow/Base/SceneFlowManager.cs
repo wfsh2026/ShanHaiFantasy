@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 场景流转统一入口。
+/// 负责构建场景请求、校验状态并触发运行时切换。
+/// </summary>
 public sealed class SceneFlowManager {
     private readonly SceneRegistry sceneRegistry;
     private readonly ClientInputFeatureManager inputFeatureManager;

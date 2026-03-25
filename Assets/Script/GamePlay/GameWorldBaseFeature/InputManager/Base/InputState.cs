@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 输入快照。
+/// 只保存当前帧的按钮状态、轴值和鼠标相关数据。
+/// </summary>
 public sealed class InputState {
     private readonly Dictionary<InputActionId, InputButtonState> buttonStates = new Dictionary<InputActionId, InputButtonState>();
     private readonly Dictionary<InputActionId, float> axisValues = new Dictionary<InputActionId, float>();
@@ -25,6 +29,7 @@ public sealed class InputState {
     public void SetButtonState(InputActionId actionId, bool isDown, bool isPressing, bool isUp) {
         InputButtonState state;
         buttonStates.TryGetValue(actionId, out state);
+        // 同一动作可能被多个按键映射命中，因此这里做按位合并。
         state.IsDown = state.IsDown || isDown;
         state.IsPressing = state.IsPressing || isPressing;
         state.IsUp = state.IsUp || isUp;

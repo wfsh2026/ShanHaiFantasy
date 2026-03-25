@@ -1,3 +1,7 @@
+/// <summary>
+/// 场景流转系统的客户端挂载入口。
+/// 负责创建 SceneFlowManager，并把重载场景快捷键注册进输入系统。
+/// </summary>
 public sealed class ClientSceneFlowFeatureManager : AbsExtendGameWorldFeature {
     private SceneRegistry sceneRegistry;
     private SceneFlowManager sceneFlowManager;

@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 角色属性主面板。
+/// 负责测试 UI、输入、场景流转和音频的综合调用链。
+/// </summary>
 public sealed class RoleAttrPanel : UIPanelBase {
     private Text titleText;
     private Text openSourceText;

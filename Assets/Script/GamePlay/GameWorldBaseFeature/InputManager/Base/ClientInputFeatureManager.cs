@@ -1,3 +1,7 @@
+/// <summary>
+/// 输入系统的客户端挂载入口。
+/// 负责创建输入管理器、注册默认 Handler，并根据 UI 状态切换上下文。
+/// </summary>
 public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     private InputManager inputManager;
     private GlobalInputHandler globalInputHandler;
@@ -65,6 +69,7 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
         bool hasPopup = UIManager.Instance.IsOpen<AdjustAttrPopup>();
         bool hasMainPanel = UIManager.Instance.IsOpen<RoleAttrPanel>();
 
+        // 当前示例里上下文优先级固定为 Block > Popup > UI > Global > Mode。
         inputManager.SetContextActive(InputContextType.Block, false);
         inputManager.SetContextActive(InputContextType.Popup, hasPopup);
         inputManager.SetContextActive(InputContextType.UI, hasPopup || hasMainPanel);

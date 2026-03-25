@@ -1,3 +1,6 @@
+/// <summary>
+/// 音频总线分组定义。
+/// </summary>
 public enum AudioBusType {
     Master = 0,
     Bgm = 1,

@@ -1,3 +1,7 @@
+/// <summary>
+/// 测试模式输入处理器。
+/// 负责把测试快捷键转换成模式命令。
+/// </summary>
 public sealed class TestModeInputHandler : IInputHandler {
     private readonly TestModeInputService inputService;
 

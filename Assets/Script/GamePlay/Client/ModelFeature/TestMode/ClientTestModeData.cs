@@ -1,3 +1,7 @@
+/// <summary>
+/// 测试模式的数据层。
+/// 负责保存测试模式运行时状态，并通过 BindableValue 向 UI 和逻辑联动层暴露字段变化。
+/// </summary>
 public sealed class ClientTestModeData : AbsModeData {
     private const int DEFAULT_MAX_HP = 100;
     private const int DEFAULT_MAX_MP = 60;
@@ -143,6 +147,7 @@ public sealed class ClientTestModeData : AbsModeData {
             return;
         }
 
+        // 配置只负责提供初始模板值，运行时状态仍然由 Data 自己持有。
         string configRoleName = string.IsNullOrEmpty(config.RoleName) ? DEFAULT_ROLE_NAME : config.RoleName;
         string configStageName = string.IsNullOrEmpty(config.DefaultStageName) ? DEFAULT_STAGE_NAME : config.DefaultStageName;
         int configMaxHP = ClampValue(config.MaxHP, 1, int.MaxValue);

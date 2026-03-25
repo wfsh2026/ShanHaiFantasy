@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// UI 注册表。
+/// 统一维护 Panel 类型、UIId 和窗口配置之间的映射关系。
+/// </summary>
 public sealed class UIRegistry {
     private readonly Dictionary<Type, UIWindowConfig> panelTypeDict = new Dictionary<Type, UIWindowConfig>();
     private readonly Dictionary<string, UIWindowConfig> uiIdDict = new Dictionary<string, UIWindowConfig>();

@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Loading 面板。
+/// 负责把场景切换上下文转换成可见的加载提示。
+/// </summary>
 public sealed class LoadingPanel : UIPanelBase {
     private Text titleText;
     private Text stepText;

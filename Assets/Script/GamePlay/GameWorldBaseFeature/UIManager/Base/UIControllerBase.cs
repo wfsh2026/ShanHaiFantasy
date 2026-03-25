@@ -1,5 +1,9 @@
 using System;
 
+/// <summary>
+/// UI 控制器基类。
+/// 负责连接 Panel、GameWorld 和统一的界面开关入口。
+/// </summary>
 public abstract class UIControllerBase<TPanel> where TPanel : UIPanelBase {
     protected readonly TPanel panel;
     protected readonly UIManager uiManager;

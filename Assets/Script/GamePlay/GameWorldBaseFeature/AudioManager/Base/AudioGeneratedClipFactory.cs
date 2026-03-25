@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 运行时测试音频生成器。
+/// 在缺少真实音频资源时，为测试链路生成可播放的正弦波片段。
+/// </summary>
 public static class AudioGeneratedClipFactory {
     private static readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>(16);
     private const int SAMPLE_RATE = 44100;
