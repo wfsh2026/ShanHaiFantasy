@@ -43,6 +43,7 @@
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/ConfigManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/SaveDataManager/Base/`
+- `Assets/Script/GamePlay/GameWorldBaseFeature/CameraManager/Base/`
 
 业务扩展目录：
 
@@ -128,6 +129,12 @@
 
 `GameWorldClient -> ClientSaveDataFeatureManager -> SaveDataManager.Instance -> SettingsData / PlayerLocalData`
 
+### 5.8 Camera
+
+当前合法链路：
+
+`GameWorldClient -> ClientCameraFeatureManager -> CameraManager.Instance`
+
 ---
 
 ## 6. AI 允许修改的范围
@@ -147,6 +154,7 @@
 - 新增业务音频触发脚本
 - 新增业务配置类和配置资产
 - 新增业务本地存档字段和设置项
+- 新增业务相机调用和场景相机标记
 
 如果需求触碰以下内容，必须先得到明确授权：
 
@@ -170,6 +178,7 @@
 - 绕过 `AudioManager` 在业务层到处直接管理 `AudioSource`
 - 绕过 `ConfigManager.Instance` 在业务层到处直接加载配置资源
 - 绕过 `SaveDataManager.Instance` 在业务层到处直接写本地文件
+- 绕过 `CameraManager.Instance` 在业务层到处直接操作 `Camera.main` 或 `Cinemachine`
 - 在 UI 中恢复 `UIPresenter / UIService / 整包 UIState`
 
 ---
@@ -187,8 +196,9 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 7. 若需求涉及 Audio，再阅读 `Assets/AI Prompt/AI 音频开发规范.md`
 8. 若需求涉及 Config，再阅读 `Assets/AI Prompt/AI 配置文件创建规范.md`
 9. 若需求涉及 SaveData，再阅读 `Assets/AI Prompt/AI 存档开发规范文档.md`
-10. 判断需求是否触碰主链或 Base
-11. 若触碰冻结层，必须先确认已获授权
+10. 若需求涉及 Camera，再阅读 `Assets/AI Prompt/AI 相机开发规范.md`
+11. 判断需求是否触碰主链或 Base
+12. 若触碰冻结层，必须先确认已获授权
 
 ---
 
@@ -205,4 +215,5 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 - Audio 必须统一走 `AudioManager`
 - Config 必须统一走 `ConfigManager.Instance`
 - SaveData 必须统一走 `SaveDataManager.Instance`
+- Camera 必须统一走 `CameraManager.Instance`
 - UI 数据刷新必须使用字段绑定

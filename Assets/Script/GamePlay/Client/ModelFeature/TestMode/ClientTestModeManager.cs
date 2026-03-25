@@ -1,12 +1,17 @@
+using UnityEngine;
+
 /// <summary>
 /// 测试模式管理器。
 /// 负责组装测试模式的 Data、Logic、Stage，并拉起对应的 UI、输入和音频演示。
 /// </summary>
 public sealed class ClientTestModeManager : ClientModeManager {
+    private const string CAMERA_TARGET_NAME = "UITestCameraTarget";
+
     private ClientTestModeData data;
     private ClientTestModeLogic logic;
     private ClientInputFeatureManager inputFeatureManager;
     private TestModeInputHandler inputHandler;
+    private GameObject cameraTargetObject;
 
     protected override void OnInit() {
         base.OnInit();
@@ -21,6 +26,7 @@ public sealed class ClientTestModeManager : ClientModeManager {
         SaveDataManager.Instance.SetLastMode(GetType().Name);
         SaveDataManager.Instance.MarkLaunch();
         AudioManager.Instance.PlayBgm("test_bgm");
+        BindCameraTarget();
         RegisterInputHandler();
         OpenModeUI();
     }
@@ -32,6 +38,7 @@ public sealed class ClientTestModeManager : ClientModeManager {
         inputHandler = null;
         data = null;
         logic = null;
+        cameraTargetObject = null;
         base.OnRemove();
     }
 
@@ -75,5 +82,35 @@ public sealed class ClientTestModeManager : ClientModeManager {
         }
 
         inputFeatureManager.UnregisterHandler(InputContextType.Mode, inputHandler);
+    }
+
+    private void BindCameraTarget() {
+        cameraTargetObject = EnsureCameraTargetObject();
+        if (cameraTargetObject == null) {
+            return;
+        }
+
+        CameraManager.Instance.RefreshSceneCamera();
+        CameraManager.Instance.SetFollowTarget(cameraTargetObject.transform);
+        CameraManager.Instance.SetLookAtTarget(cameraTargetObject.transform);
+    }
+
+    private static GameObject EnsureCameraTargetObject() {
+        GameObject targetObject = GameObject.Find(CAMERA_TARGET_NAME);
+        if (targetObject != null) {
+            return targetObject;
+        }
+
+        targetObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        targetObject.name = CAMERA_TARGET_NAME;
+        targetObject.transform.position = new UnityEngine.Vector3(0f, 1.2f, 0f);
+        targetObject.transform.localScale = new UnityEngine.Vector3(0.75f, 0.75f, 0.75f);
+
+        Renderer renderer = targetObject.GetComponent<Renderer>();
+        if (renderer != null) {
+            renderer.material.color = new UnityEngine.Color(1f, 0.78f, 0.22f, 1f);
+        }
+
+        return targetObject;
     }
 }

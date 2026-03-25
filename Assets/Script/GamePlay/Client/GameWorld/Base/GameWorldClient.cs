@@ -24,6 +24,7 @@ public class GameWorldClient : System.IDisposable {
         gameWorld.AddExtendFeature<ClientAudioFeatureManager>();
         gameWorld.AddExtendFeature<ClientInputFeatureManager>();
         gameWorld.AddExtendFeature<ClientSceneFlowFeatureManager>();
+        gameWorld.AddExtendFeature<ClientCameraFeatureManager>();
         gameWorld.AddExtendFeature<ClientModeFeatureManager>();
     }
 

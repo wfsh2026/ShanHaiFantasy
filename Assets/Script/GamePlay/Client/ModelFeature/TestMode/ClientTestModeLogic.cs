@@ -100,6 +100,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
 
         data.ChangeHP(-value);
         AudioManager.Instance.PlaySfx("hp_change");
+        CameraManager.Instance.Shake(0.18f, 0.16f);
     }
 
     public void AddMP(int value) {
@@ -130,6 +131,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
             data.ChangeMP(drainMPDelta);
             AudioManager.Instance.PlaySfx("hp_change");
             AudioManager.Instance.PlaySfx("mp_change");
+            CameraManager.Instance.Shake(0.08f, 0.1f);
         } else {
             data.ChangeHP(recoverHPDelta);
             data.ChangeMP(recoverMPDelta);
