@@ -16,6 +16,7 @@ public sealed class ClientTestModeManager : ClientModeManager {
         logic = GetLogic<ClientTestModeLogic>();
         uiManager = gameWorld.GetExtendFeature<ClientUIFeatureManager>();
         inputFeatureManager = gameWorld.GetExtendFeature<ClientInputFeatureManager>();
+        AudioManager.Instance.PlayBgm("test_bgm");
         RegisterInputHandler();
         OpenModeUI();
     }

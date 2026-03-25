@@ -15,6 +15,8 @@ public sealed class RoleAttrPanel : UIPanelBase {
     private Button popupAddHPButton;
     private Button popupReduceMPButton;
     private Button nextStageButton;
+    private Button reloadSceneButton;
+    private Button toggleEmitterButton;
     private Button closeButton;
     private RoleAttrPanelPresenter presenter;
 
@@ -25,7 +27,7 @@ public sealed class RoleAttrPanel : UIPanelBase {
         UIRuntimeWidgetFactory.StretchRect(mask.rectTransform);
 
         Image panelBackground = UIRuntimeWidgetFactory.CreateImage("PanelBackground", mask.rectTransform, new Color(0.12f, 0.14f, 0.2f, 0.96f));
-        SetAnchor(panelBackground.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(680f, 420f), Vector2.zero);
+        SetAnchor(panelBackground.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(680f, 528f), Vector2.zero);
 
         titleText = CreateLabel(panelBackground.rectTransform, "Title", new Vector2(24f, -24f), new Vector2(630f, 32f), 28, TextAnchor.MiddleLeft);
         openSourceText = CreateLabel(panelBackground.rectTransform, "OpenSource", new Vector2(24f, -64f), new Vector2(630f, 24f), 18, TextAnchor.MiddleLeft);
@@ -38,13 +40,15 @@ public sealed class RoleAttrPanel : UIPanelBase {
         reduceHPButton = CreateButton(panelBackground.rectTransform, "ReduceHPButton", "-10 HP", new Vector2(170f, -252f), new Vector2(130f, 42f), OnClickReduceHP);
         addMPButton = CreateButton(panelBackground.rectTransform, "AddMPButton", "+5 MP", new Vector2(24f, -304f), new Vector2(130f, 42f), OnClickAddMP);
         reduceMPButton = CreateButton(panelBackground.rectTransform, "ReduceMPButton", "-5 MP", new Vector2(170f, -304f), new Vector2(130f, 42f), OnClickReduceMP);
-        popupAddHPButton = CreateButton(panelBackground.rectTransform, "PopupAddHPButton", "弹窗加 HP", new Vector2(332f, -252f), new Vector2(146f, 42f), OnClickPopupAddHP);
-        popupReduceMPButton = CreateButton(panelBackground.rectTransform, "PopupReduceMPButton", "弹窗减 MP", new Vector2(332f, -304f), new Vector2(146f, 42f), OnClickPopupReduceMP);
+        popupAddHPButton = CreateButton(panelBackground.rectTransform, "PopupAddHPButton", "Popup +HP", new Vector2(332f, -252f), new Vector2(146f, 42f), OnClickPopupAddHP);
+        popupReduceMPButton = CreateButton(panelBackground.rectTransform, "PopupReduceMPButton", "Popup -MP", new Vector2(332f, -304f), new Vector2(146f, 42f), OnClickPopupReduceMP);
         nextStageButton = CreateButton(panelBackground.rectTransform, "NextStageButton", "Next Stage", new Vector2(508f, -252f), new Vector2(146f, 42f), OnClickNextStage);
-        closeButton = CreateButton(panelBackground.rectTransform, "CloseButton", "Close", new Vector2(508f, -304f), new Vector2(146f, 42f), OnClickClose);
+        reloadSceneButton = CreateButton(panelBackground.rectTransform, "ReloadSceneButton", "Reload Scene", new Vector2(508f, -304f), new Vector2(146f, 42f), OnClickReloadScene);
+        toggleEmitterButton = CreateButton(panelBackground.rectTransform, "ToggleEmitterButton", "Toggle Emitter", new Vector2(332f, -356f), new Vector2(146f, 42f), OnClickToggleEmitter);
+        closeButton = CreateButton(panelBackground.rectTransform, "CloseButton", "Close", new Vector2(508f, -356f), new Vector2(146f, 42f), OnClickClose);
 
-        Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -360f), new Vector2(620f, 40f), 18, TextAnchor.UpperLeft);
-        tipsText.text = "示例覆盖三种交互：1.UI 直接改模式 HP/MP  2.模式自动流逝刷新 UI  3.UI 打开弹窗并等待结果返回";
+        Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -460f), new Vector2(620f, 52f), 18, TextAnchor.UpperLeft);
+        tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled.";
     }
 
     public override void Refresh(UIStateBase state) {
@@ -113,6 +117,18 @@ public sealed class RoleAttrPanel : UIPanelBase {
         }
     }
 
+    private void OnClickReloadScene() {
+        if (presenter != null) {
+            presenter.OnClickReloadScene();
+        }
+    }
+
+    private void OnClickToggleEmitter() {
+        if (presenter != null) {
+            presenter.OnClickToggleEmitter();
+        }
+    }
+
     private void OnClickClose() {
         if (presenter != null) {
             presenter.OnClickClose();
@@ -127,6 +143,8 @@ public sealed class RoleAttrPanel : UIPanelBase {
         RemoveButtonListener(popupAddHPButton, OnClickPopupAddHP);
         RemoveButtonListener(popupReduceMPButton, OnClickPopupReduceMP);
         RemoveButtonListener(nextStageButton, OnClickNextStage);
+        RemoveButtonListener(reloadSceneButton, OnClickReloadScene);
+        RemoveButtonListener(toggleEmitterButton, OnClickToggleEmitter);
         RemoveButtonListener(closeButton, OnClickClose);
     }
 

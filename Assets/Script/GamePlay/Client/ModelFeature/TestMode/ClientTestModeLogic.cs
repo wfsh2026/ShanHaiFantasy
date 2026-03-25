@@ -48,6 +48,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         }
 
         data.ChangeHP(value);
+        AudioManager.Instance.PlaySfx("hp_change");
     }
 
     public void ReduceHP(int value) {
@@ -56,6 +57,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         }
 
         data.ChangeHP(-value);
+        AudioManager.Instance.PlaySfx("hp_change");
     }
 
     public void AddMP(int value) {
@@ -64,6 +66,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         }
 
         data.ChangeMP(value);
+        AudioManager.Instance.PlaySfx("mp_change");
     }
 
     public void ReduceMP(int value) {
@@ -72,6 +75,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         }
 
         data.ChangeMP(-value);
+        AudioManager.Instance.PlaySfx("mp_change");
     }
 
     private void ApplyAutoChange() {
@@ -82,9 +86,13 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         if (isDrainPhase) {
             data.ChangeHP(-8);
             data.ChangeMP(-5);
+            AudioManager.Instance.PlaySfx("hp_change");
+            AudioManager.Instance.PlaySfx("mp_change");
         } else {
             data.ChangeHP(6);
             data.ChangeMP(4);
+            AudioManager.Instance.PlaySfx("hp_change");
+            AudioManager.Instance.PlaySfx("mp_change");
         }
 
         if (data.HP <= 25 || data.MP <= 15) {

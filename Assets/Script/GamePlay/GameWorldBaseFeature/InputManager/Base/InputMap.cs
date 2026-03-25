@@ -18,6 +18,7 @@ public sealed class InputMap {
         bindings.Add(InputBinding.CreateKey(InputActionId.ToggleRoleAttrPanel, KeyCode.C));
         bindings.Add(InputBinding.CreateKey(InputActionId.ToggleDebugUI, KeyCode.F1));
         bindings.Add(InputBinding.CreateKey(InputActionId.NextStage, KeyCode.Tab));
+        bindings.Add(InputBinding.CreateKey(InputActionId.ReloadScene, KeyCode.F5));
         bindings.Add(InputBinding.CreateKey(InputActionId.AddHP, KeyCode.Alpha1));
         bindings.Add(InputBinding.CreateKey(InputActionId.ReduceHP, KeyCode.Alpha2));
         bindings.Add(InputBinding.CreateKey(InputActionId.AddMP, KeyCode.Alpha3));

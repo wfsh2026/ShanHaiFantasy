@@ -19,36 +19,42 @@ public sealed class RoleAttrPanelPresenter : UIPresenterBase {
     }
 
     public void OnClickClose() {
+        PlayUIButtonSound();
         ClosePanel();
     }
 
     public void OnClickAddHP() {
         if (uiService != null) {
+            uiService.PlayUIButtonSound();
             uiService.RequestAttrChange(RoleAttrType.HP, RoleAttrOperationType.Add, QUICK_HP_VALUE);
         }
     }
 
     public void OnClickReduceHP() {
         if (uiService != null) {
+            uiService.PlayUIButtonSound();
             uiService.RequestAttrChange(RoleAttrType.HP, RoleAttrOperationType.Reduce, QUICK_HP_VALUE);
         }
     }
 
     public void OnClickAddMP() {
         if (uiService != null) {
+            uiService.PlayUIButtonSound();
             uiService.RequestAttrChange(RoleAttrType.MP, RoleAttrOperationType.Add, QUICK_MP_VALUE);
         }
     }
 
     public void OnClickReduceMP() {
         if (uiService != null) {
+            uiService.PlayUIButtonSound();
             uiService.RequestAttrChange(RoleAttrType.MP, RoleAttrOperationType.Reduce, QUICK_MP_VALUE);
         }
     }
 
     public void OnClickPopupChange(RoleAttrType attrType, RoleAttrOperationType operationType) {
+        PlayUIButtonSound();
         AdjustAttrPopupOpenData openData = new AdjustAttrPopupOpenData();
-        openData.Title = uiService == null ? "调整属性" : uiService.GetOperationText(attrType, operationType);
+        openData.Title = uiService == null ? "Adjust Attribute" : uiService.GetOperationText(attrType, operationType);
         openData.AttrType = attrType;
         openData.OperationType = operationType;
         openData.DefaultValue = attrType == RoleAttrType.HP ? QUICK_HP_VALUE : QUICK_MP_VALUE;
@@ -58,7 +64,21 @@ public sealed class RoleAttrPanelPresenter : UIPresenterBase {
 
     public void OnClickNextStage() {
         if (uiService != null) {
+            uiService.PlayUIButtonSound();
             uiService.RequestNextStage();
+        }
+    }
+
+    public void OnClickReloadScene() {
+        if (uiService != null) {
+            uiService.RequestReloadUITestScene();
+        }
+    }
+
+    public void OnClickToggleEmitter() {
+        if (uiService != null) {
+            uiService.PlayUIButtonSound();
+            uiService.ToggleDemoEmitterObject();
         }
     }
 
@@ -86,7 +106,7 @@ public sealed class RoleAttrPanelPresenter : UIPresenterBase {
 
         RoleAttrPanelOpenData openData = GetOpenData<RoleAttrPanelOpenData>();
         RoleAttrPanelUIState state = new RoleAttrPanelUIState();
-        state.Title = data.RoleName + " 属性测试";
+        state.Title = data.RoleName + " Attribute Test";
         state.OpenSourceText = "OpenSource: " + (openData == null || string.IsNullOrEmpty(openData.OpenSource) ? "ModeAutoOpen" : openData.OpenSource);
         state.StageName = "Stage: " + data.StageName + "  |  EnterCount: " + data.StageEnterCount;
         state.RunningTimeText = "RunningTime: " + data.RunningTime.ToString("F1") + "s";
@@ -101,6 +121,12 @@ public sealed class RoleAttrPanelPresenter : UIPresenterBase {
         if (uiService != null) {
             uiService.RemoveDataListener(OnDataChanged);
             uiService = null;
+        }
+    }
+
+    private void PlayUIButtonSound() {
+        if (uiService != null) {
+            uiService.PlayUIButtonSound();
         }
     }
 }

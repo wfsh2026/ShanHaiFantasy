@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public sealed class RoleAttrUIService {
     private readonly GameWorld gameWorld;
@@ -66,9 +67,36 @@ public sealed class RoleAttrUIService {
         }
     }
 
+    public void RequestReloadUITestScene() {
+        if (gameWorld == null) {
+            return;
+        }
+
+        AudioManager.Instance.PlayUISfx("scene_reload");
+        ClientSceneFlowFeatureManager sceneFlowFeatureManager = gameWorld.GetExtendFeature<ClientSceneFlowFeatureManager>();
+        if (sceneFlowFeatureManager == null || sceneFlowFeatureManager.SceneFlowManager == null) {
+            return;
+        }
+
+        sceneFlowFeatureManager.SceneFlowManager.ReloadCurrentScene("ReloadFromUI");
+    }
+
+    public void PlayUIButtonSound() {
+        AudioManager.Instance.PlayUISfx("ui_click");
+    }
+
+    public void ToggleDemoEmitterObject() {
+        UITestAudioDemoController controller = UnityEngine.Object.FindObjectOfType<UITestAudioDemoController>();
+        if (controller == null) {
+            return;
+        }
+
+        controller.ToggleDemoEmitterObject();
+    }
+
     public string GetOperationText(RoleAttrType attrType, RoleAttrOperationType operationType) {
         string attrName = attrType == RoleAttrType.HP ? "HP" : "MP";
-        string actionName = operationType == RoleAttrOperationType.Add ? "增加" : "减少";
+        string actionName = operationType == RoleAttrOperationType.Add ? "Add" : "Reduce";
         return actionName + " " + attrName;
     }
 

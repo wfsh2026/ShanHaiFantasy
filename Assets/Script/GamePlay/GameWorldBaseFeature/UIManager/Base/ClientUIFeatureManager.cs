@@ -185,6 +185,35 @@ public sealed class ClientUIFeatureManager : AbsExtendGameWorldFeature, IUIManag
             false,
             true,
             true);
+        registry.Register<LoadingPanel, LoadingPanelPresenter>(
+            "LoadingPanel",
+            UILayer.System,
+            UICacheMode.DestroyOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            false,
+            false,
+            true);
+    }
+
+    public void CloseByLayer(UILayer layer) {
+        List<UIPanelBase> closeList = new List<UIPanelBase>();
+        foreach (KeyValuePair<string, List<UIPanelBase>> pair in activePanels) {
+            List<UIPanelBase> panelList = pair.Value;
+            for (int i = 0; i < panelList.Count; ++i) {
+                UIPanelBase panel = panelList[i];
+                if (panel != null && panel.Config != null && panel.Config.Layer == layer) {
+                    closeList.Add(panel);
+                }
+            }
+        }
+
+        for (int i = 0; i < closeList.Count; ++i) {
+            UIPanelBase panel = closeList[i];
+            if (panel != null) {
+                ClosePanel(panel, null);
+            }
+        }
     }
 
     private UIPanelBase GetReusablePanel(UIWindowConfig config) {
