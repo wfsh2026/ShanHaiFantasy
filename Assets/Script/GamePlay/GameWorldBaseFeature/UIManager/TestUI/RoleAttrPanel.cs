@@ -21,6 +21,8 @@ public sealed class RoleAttrPanel : UIPanelBase {
     private Button nextStageButton;
     private Button reloadSceneButton;
     private Button toggleEmitterButton;
+    private Button spawnCubeButton;
+    private Button recycleCubeButton;
     private Button closeButton;
     private RoleAttrPanelController controller;
 
@@ -29,7 +31,7 @@ public sealed class RoleAttrPanel : UIPanelBase {
         UIRuntimeWidgetFactory.StretchRect(mask.rectTransform);
 
         Image panelBackground = UIRuntimeWidgetFactory.CreateImage("PanelBackground", mask.rectTransform, new Color(0.12f, 0.14f, 0.2f, 0.96f));
-        SetAnchor(panelBackground.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(680f, 528f), Vector2.zero);
+        SetAnchor(panelBackground.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(680f, 588f), Vector2.zero);
 
         titleText = CreateLabel(panelBackground.rectTransform, "Title", new Vector2(24f, -24f), new Vector2(630f, 32f), 28, TextAnchor.MiddleLeft);
         openSourceText = CreateLabel(panelBackground.rectTransform, "OpenSource", new Vector2(24f, -64f), new Vector2(630f, 24f), 18, TextAnchor.MiddleLeft);
@@ -47,10 +49,12 @@ public sealed class RoleAttrPanel : UIPanelBase {
         nextStageButton = CreateButton(panelBackground.rectTransform, "NextStageButton", "Next Stage", new Vector2(508f, -252f), new Vector2(146f, 42f), OnClickNextStage);
         reloadSceneButton = CreateButton(panelBackground.rectTransform, "ReloadSceneButton", "Reload Scene", new Vector2(508f, -304f), new Vector2(146f, 42f), OnClickReloadScene);
         toggleEmitterButton = CreateButton(panelBackground.rectTransform, "ToggleEmitterButton", "Toggle Emitter", new Vector2(332f, -356f), new Vector2(146f, 42f), OnClickToggleEmitter);
-        closeButton = CreateButton(panelBackground.rectTransform, "CloseButton", "Close", new Vector2(508f, -356f), new Vector2(146f, 42f), OnClickClose);
+        spawnCubeButton = CreateButton(panelBackground.rectTransform, "SpawnCubeButton", "Spawn Cube", new Vector2(24f, -356f), new Vector2(130f, 42f), OnClickSpawnCube);
+        recycleCubeButton = CreateButton(panelBackground.rectTransform, "RecycleCubeButton", "Recycle Cube", new Vector2(170f, -356f), new Vector2(130f, 42f), OnClickRecycleCube);
+        closeButton = CreateButton(panelBackground.rectTransform, "CloseButton", "Close", new Vector2(508f, -408f), new Vector2(146f, 42f), OnClickClose);
 
-        Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -460f), new Vector2(620f, 52f), 18, TextAnchor.UpperLeft);
-        tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled.";
+        Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -504f), new Vector2(620f, 56f), 18, TextAnchor.UpperLeft);
+        tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio, Pool.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled, cubes are spawned from prefab pool.";
         ShowDefault();
     }
 
@@ -167,6 +171,18 @@ public sealed class RoleAttrPanel : UIPanelBase {
         }
     }
 
+    private void OnClickSpawnCube() {
+        if (controller != null) {
+            controller.SpawnCube();
+        }
+    }
+
+    private void OnClickRecycleCube() {
+        if (controller != null) {
+            controller.RecycleCube();
+        }
+    }
+
     private void OnClickClose() {
         if (controller != null) {
             controller.Close();
@@ -183,6 +199,8 @@ public sealed class RoleAttrPanel : UIPanelBase {
         RemoveButtonListener(nextStageButton, OnClickNextStage);
         RemoveButtonListener(reloadSceneButton, OnClickReloadScene);
         RemoveButtonListener(toggleEmitterButton, OnClickToggleEmitter);
+        RemoveButtonListener(spawnCubeButton, OnClickSpawnCube);
+        RemoveButtonListener(recycleCubeButton, OnClickRecycleCube);
         RemoveButtonListener(closeButton, OnClickClose);
     }
 

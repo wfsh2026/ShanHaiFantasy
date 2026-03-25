@@ -2,8 +2,9 @@
 
 ## 1. 目的
 
-本文档定义当前 `ShanHaiFantasy` 项目 `GamePlay` 主干的 AI 开发边界。  
-默认原则很简单：
+本文档定义当前 `ShanHaiFantasy` 项目 `GamePlay` 主干的 AI 开发边界。
+
+默认原则：
 
 - 主链冻结
 - Base 冻结
@@ -44,6 +45,7 @@
 - `Assets/Script/GamePlay/GameWorldBaseFeature/ConfigManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/SaveDataManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/CameraManager/Base/`
+- `Assets/Script/GamePlay/GameWorldBaseFeature/PoolManager/Base/`
 
 业务扩展目录：
 
@@ -55,20 +57,21 @@
 - `Assets/Script/GamePlay/GameWorldBaseFeature/InputManager/TestInput/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/Common/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/TestAudio/`
+- `Assets/Script/GamePlay/GameWorldBaseFeature/PoolManager/TestPool/`
 - `Assets/ToBundle/Configs/`
 
 ---
 
 ## 4. 冻结边界
 
-以下内容默认冻结，未获用户明确授权不得修改：
+以下内容默认冻结，未获授权不得修改：
 
 - `GameEngine`
 - 所有 `GameWorld/Base`
 - 所有 `ModelFeature/Base`
 - 所有 `GameWorldBaseFeature/*/Base`
 
-冻结的含义：
+冻结含义：
 
 - 不改主链结构
 - 不改生命周期机制
@@ -97,7 +100,7 @@
 - `UIManager.Instance` 是唯一合法 UI 开关入口
 - UI 长期只绑定 `Data`
 - Controller 在命令发生时按需调用 `Logic`
-- UI 下行刷新必须使用字段绑定，不再使用 `Presenter / UIService / 整包 UIState`
+- UI 下行刷新必须使用字段绑定
 
 ### 5.3 Input
 
@@ -135,6 +138,12 @@
 
 `GameWorldClient -> ClientCameraFeatureManager -> CameraManager.Instance`
 
+### 5.9 Pool
+
+当前合法链路：
+
+`GameWorldClient -> ClientPoolFeatureManager -> PoolManager.Instance`
+
 ---
 
 ## 6. AI 允许修改的范围
@@ -155,8 +164,9 @@
 - 新增业务配置类和配置资产
 - 新增业务本地存档字段和设置项
 - 新增业务相机调用和场景相机标记
+- 新增业务对象池测试脚本和 prefab 池使用入口
 
-如果需求触碰以下内容，必须先得到明确授权：
+如需触碰以下内容，必须先得到明确授权：
 
 - 任意 `Base`
 - 任意主链入口
@@ -174,11 +184,12 @@
 - 在 `GameWorld` 直接写玩法逻辑
 - 绕过 `UIManager.Instance` 管理业务 UI
 - 绕过 `InputManager` 在业务层直接到处写 `Input.GetKeyDown`
-- 绕过 `SceneFlowManager` 在业务 UI 或业务逻辑里直接切场景
+- 绕过 `SceneFlowManager` 在 UI 或业务逻辑里直接切场景
 - 绕过 `AudioManager` 在业务层到处直接管理 `AudioSource`
 - 绕过 `ConfigManager.Instance` 在业务层到处直接加载配置资源
 - 绕过 `SaveDataManager.Instance` 在业务层到处直接写本地文件
 - 绕过 `CameraManager.Instance` 在业务层到处直接操作 `Camera.main` 或 `Cinemachine`
+- 绕过 `PoolManager.Instance` 在业务层到处直接维护公共对象池
 - 在 UI 中恢复 `UIPresenter / UIService / 整包 UIState`
 
 ---
@@ -197,8 +208,9 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 8. 若需求涉及 Config，再阅读 `Assets/AI Prompt/AI 配置文件创建规范.md`
 9. 若需求涉及 SaveData，再阅读 `Assets/AI Prompt/AI 存档开发规范文档.md`
 10. 若需求涉及 Camera，再阅读 `Assets/AI Prompt/AI 相机开发规范.md`
-11. 判断需求是否触碰主链或 Base
-12. 若触碰冻结层，必须先确认已获授权
+11. 若需求涉及 Pool，再阅读 `Assets/AI Prompt/AI 对象池开发规范.md`
+12. 判断需求是否触碰主链或 Base
+13. 若触碰冻结层，必须先确认已获授权
 
 ---
 
@@ -216,4 +228,5 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 - Config 必须统一走 `ConfigManager.Instance`
 - SaveData 必须统一走 `SaveDataManager.Instance`
 - Camera 必须统一走 `CameraManager.Instance`
+- Pool 必须统一走 `PoolManager.Instance`
 - UI 数据刷新必须使用字段绑定

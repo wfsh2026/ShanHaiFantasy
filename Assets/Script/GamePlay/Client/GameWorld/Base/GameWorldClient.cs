@@ -25,6 +25,7 @@ public class GameWorldClient : System.IDisposable {
         gameWorld.AddExtendFeature<ClientInputFeatureManager>();
         gameWorld.AddExtendFeature<ClientSceneFlowFeatureManager>();
         gameWorld.AddExtendFeature<ClientCameraFeatureManager>();
+        gameWorld.AddExtendFeature<ClientPoolFeatureManager>();
         gameWorld.AddExtendFeature<ClientModeFeatureManager>();
     }
 

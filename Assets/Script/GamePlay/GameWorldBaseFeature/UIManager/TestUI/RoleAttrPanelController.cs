@@ -120,6 +120,22 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
         }
     }
 
+    public void SpawnCube() {
+        PlayUIButtonSound();
+        UITestPoolDemoController poolController = UITestPoolDemoController.EnsureInstance();
+        if (poolController != null) {
+            poolController.SpawnDemoCube();
+        }
+    }
+
+    public void RecycleCube() {
+        PlayUIButtonSound();
+        UITestPoolDemoController poolController = UITestPoolDemoController.EnsureInstance();
+        if (poolController != null) {
+            poolController.RecycleLastCube();
+        }
+    }
+
     public void Close() {
         PlayUIButtonSound();
         ClosePanel();
