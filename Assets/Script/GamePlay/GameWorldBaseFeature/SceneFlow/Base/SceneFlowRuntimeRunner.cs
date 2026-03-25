@@ -103,6 +103,7 @@ public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
         loadingContext.Step = SceneLoadingStep.EnterScene;
         loadingContext.StepText = "Enter Scene";
         loadingContext.Progress = 1f;
+        SaveDataManager.Instance.SetLastScene(config.SceneId, config.ScenePath);
         yield return null;
 
         loadingContext.Step = SceneLoadingStep.Completed;

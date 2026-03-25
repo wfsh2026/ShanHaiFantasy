@@ -14,6 +14,7 @@ public class GameWorldClient : System.IDisposable {
         isStarted = true;
         gameWorld.GameState = GameWorld.GameStateType.Running;
         gameWorld.AddExtendFeature<ClientConfigFeatureManager>();
+        gameWorld.AddExtendFeature<ClientSaveDataFeatureManager>();
         gameWorld.AddExtendFeature<ClientUIFeatureManager>();
         gameWorld.AddExtendFeature<ClientAudioFeatureManager>();
         gameWorld.AddExtendFeature<ClientInputFeatureManager>();
