@@ -2,9 +2,8 @@ using System;
 using UnityEngine;
 
 public abstract class UIPanelBase : MonoBehaviour {
-    private ClientUIFeatureManager uiManager;
+    private UIManager uiManager;
     private UIWindowConfig config;
-    private UIPresenterBase presenter;
     private Action<UIResultBase> resultCallback;
     private bool isCreated;
 
@@ -26,41 +25,44 @@ public abstract class UIPanelBase : MonoBehaviour {
         }
     }
 
-    protected TPresenter GetPresenter<TPresenter>() where TPresenter : UIPresenterBase {
-        return presenter as TPresenter;
+    public UIManager UIManager {
+        get {
+            return uiManager;
+        }
     }
 
-    internal void Setup(ClientUIFeatureManager targetUIManager, UIWindowConfig windowConfig, UIPresenterBase panelPresenter) {
+    public GameWorld GameWorld {
+        get {
+            return uiManager != null ? uiManager.GameWorld : null;
+        }
+    }
+
+    internal void Setup(UIManager targetUIManager, UIWindowConfig windowConfig) {
         uiManager = targetUIManager;
         config = windowConfig;
-        presenter = panelPresenter;
-        presenter.Setup(this, targetUIManager, targetUIManager.GameWorld);
     }
 
     internal void SetResultCallback(Action<UIResultBase> callback) {
         resultCallback = callback;
     }
 
-    internal void OpenPanel(UIOpenDataBase openData) {
+    internal void OpenPanel() {
         gameObject.SetActive(true);
         if (!isCreated) {
             isCreated = true;
             OnCreate();
         }
 
-        presenter.Open(openData);
-        OnOpen(openData);
+        OnOpen();
         OnShow();
     }
 
     internal void ClosePanel() {
-        presenter.Close();
         OnHide();
         OnClose();
     }
 
     internal void DestroyPanel() {
-        presenter.DestroyPresenter();
         OnDestroyPanel();
     }
 
@@ -84,7 +86,7 @@ public abstract class UIPanelBase : MonoBehaviour {
     }
 
     protected abstract void OnCreate();
-    protected virtual void OnOpen(UIOpenDataBase openData) {
+    protected virtual void OnOpen() {
     }
     protected virtual void OnShow() {
     }
@@ -94,5 +96,6 @@ public abstract class UIPanelBase : MonoBehaviour {
     }
     protected virtual void OnDestroyPanel() {
     }
-    public abstract void Refresh(UIStateBase state);
+    public virtual void Refresh(UIStateBase state) {
+    }
 }

@@ -1,7 +1,6 @@
 public sealed class ClientTestModeManager : ClientModeManager {
     private ClientTestModeData data;
     private ClientTestModeLogic logic;
-    private ClientUIFeatureManager uiManager;
     private ClientInputFeatureManager inputFeatureManager;
     private TestModeInputHandler inputHandler;
 
@@ -14,7 +13,6 @@ public sealed class ClientTestModeManager : ClientModeManager {
         ChangeStage<ClientTestModeStage>();
 
         logic = GetLogic<ClientTestModeLogic>();
-        uiManager = gameWorld.GetExtendFeature<ClientUIFeatureManager>();
         inputFeatureManager = gameWorld.GetExtendFeature<ClientInputFeatureManager>();
         AudioManager.Instance.PlayBgm("test_bgm");
         RegisterInputHandler();
@@ -26,7 +24,6 @@ public sealed class ClientTestModeManager : ClientModeManager {
         CloseModeUI();
         inputFeatureManager = null;
         inputHandler = null;
-        uiManager = null;
         data = null;
         logic = null;
         base.OnRemove();
@@ -47,21 +44,13 @@ public sealed class ClientTestModeManager : ClientModeManager {
     }
 
     private void OpenModeUI() {
-        if (uiManager == null) {
-            return;
-        }
-
-        uiManager.Open<RoleAttrHUDPanel, RoleAttrHUDOpenData>(new RoleAttrHUDOpenData());
-        uiManager.Open<RoleAttrPanel, RoleAttrPanelOpenData>(new RoleAttrPanelOpenData());
+        UIManager.Instance.Open<RoleAttrHUDPanel>();
+        UIManager.Instance.Open<RoleAttrPanel>();
     }
 
     private void CloseModeUI() {
-        if (uiManager == null || uiManager.GameWorld == null) {
-            return;
-        }
-
-        uiManager.Close<RoleAttrPanel>();
-        uiManager.Close<RoleAttrHUDPanel>();
+        UIManager.Instance.Close<RoleAttrPanel>();
+        UIManager.Instance.Close<RoleAttrHUDPanel>();
     }
 
     private void RegisterInputHandler() {

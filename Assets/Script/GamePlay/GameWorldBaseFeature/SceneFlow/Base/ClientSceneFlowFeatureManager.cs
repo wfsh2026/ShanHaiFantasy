@@ -11,10 +11,9 @@ public sealed class ClientSceneFlowFeatureManager : AbsExtendGameWorldFeature {
     }
 
     protected override void OnInit() {
-        ClientUIFeatureManager uiManager = gameWorld.GetExtendFeature<ClientUIFeatureManager>();
         inputFeatureManager = gameWorld.GetExtendFeature<ClientInputFeatureManager>();
         sceneRegistry = new SceneRegistry();
-        sceneFlowManager = new SceneFlowManager(sceneRegistry, uiManager, inputFeatureManager);
+        sceneFlowManager = new SceneFlowManager(sceneRegistry, inputFeatureManager);
         RegisterInputHandler();
     }
 

@@ -1,12 +1,6 @@
 public sealed class GlobalInputHandler : IInputHandler {
-    private readonly ClientUIFeatureManager uiManager;
-
-    public GlobalInputHandler(ClientUIFeatureManager targetUIManager) {
-        uiManager = targetUIManager;
-    }
-
     public bool HandleInput(InputManager inputManager, InputState inputState) {
-        if (uiManager == null || inputManager == null || inputState == null) {
+        if (inputManager == null || inputState == null) {
             return false;
         }
 
@@ -14,16 +8,14 @@ public sealed class GlobalInputHandler : IInputHandler {
             return false;
         }
 
-        if (uiManager.IsOpen<AdjustAttrPopup>()) {
+        if (UIManager.Instance.IsOpen<AdjustAttrPopup>()) {
             return true;
         }
 
-        if (uiManager.IsOpen<RoleAttrPanel>()) {
-            uiManager.Close<RoleAttrPanel>();
+        if (UIManager.Instance.IsOpen<RoleAttrPanel>()) {
+            UIManager.Instance.Close<RoleAttrPanel>();
         } else {
-            uiManager.Open<RoleAttrPanel, RoleAttrPanelOpenData>(new RoleAttrPanelOpenData {
-                OpenSource = "InputToggle",
-            });
+            UIManager.Instance.Open<RoleAttrPanel>();
         }
 
         return true;

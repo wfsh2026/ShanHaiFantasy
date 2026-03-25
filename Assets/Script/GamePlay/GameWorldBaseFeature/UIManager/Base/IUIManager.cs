@@ -2,10 +2,8 @@ using System;
 
 public interface IUIManager {
     void Open<TPanel>() where TPanel : UIPanelBase;
-    void Open<TPanel, TOpenData>(TOpenData openData) where TPanel : UIPanelBase where TOpenData : UIOpenDataBase;
-    void OpenForResult<TPanel, TOpenData, TResult>(TOpenData openData, Action<TResult> callback)
+    void OpenForResult<TPanel, TResult>(Action<TResult> callback)
         where TPanel : UIPanelBase
-        where TOpenData : UIOpenDataBase
         where TResult : UIResultBase;
     void Close<TPanel>() where TPanel : UIPanelBase;
     void CloseTop();

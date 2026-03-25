@@ -18,11 +18,9 @@ public sealed class RoleAttrPanel : UIPanelBase {
     private Button reloadSceneButton;
     private Button toggleEmitterButton;
     private Button closeButton;
-    private RoleAttrPanelPresenter presenter;
+    private RoleAttrPanelController controller;
 
     protected override void OnCreate() {
-        presenter = GetPresenter<RoleAttrPanelPresenter>();
-
         Image mask = UIRuntimeWidgetFactory.CreateImage("Mask", RectTransform, new Color(0f, 0f, 0f, 0.42f));
         UIRuntimeWidgetFactory.StretchRect(mask.rectTransform);
 
@@ -49,89 +47,125 @@ public sealed class RoleAttrPanel : UIPanelBase {
 
         Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -460f), new Vector2(620f, 52f), 18, TextAnchor.UpperLeft);
         tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled.";
+        ShowDefault();
     }
 
-    public override void Refresh(UIStateBase state) {
-        RoleAttrPanelUIState uiState = state as RoleAttrPanelUIState;
-        if (uiState == null) {
-            return;
-        }
+    protected override void OnOpen() {
+        controller = new RoleAttrPanelController(this);
+        controller.Bind();
+    }
 
-        titleText.text = uiState.Title;
-        openSourceText.text = uiState.OpenSourceText;
-        stageText.text = uiState.StageName;
-        runningTimeText.text = uiState.RunningTimeText;
-        hpText.text = uiState.HPText;
-        mpText.text = uiState.MPText;
-        addHPButton.interactable = uiState.CanChangeHP;
-        reduceHPButton.interactable = uiState.CanChangeHP;
-        popupAddHPButton.interactable = uiState.CanChangeHP;
-        addMPButton.interactable = uiState.CanChangeMP;
-        reduceMPButton.interactable = uiState.CanChangeMP;
-        popupReduceMPButton.interactable = uiState.CanChangeMP;
+    protected override void OnClose() {
+        if (controller != null) {
+            controller.Unbind();
+            controller = null;
+        }
     }
 
     protected override void OnDestroyPanel() {
         RemoveButtonListeners();
     }
 
+    public void ShowDefault() {
+        RefreshTitle("Role Attribute Test");
+        openSourceText.text = "OpenSource: FieldBinding";
+        RefreshStage("None", 0);
+        RefreshRunningTime(0f);
+        RefreshHP(new RoleAttrValue(0, 0));
+        RefreshMP(new RoleAttrValue(0, 0));
+        SetCanChangeHP(false);
+        SetCanChangeMP(false);
+    }
+
+    public void RefreshTitle(string title) {
+        titleText.text = title;
+    }
+
+    public void RefreshStage(string stageName, int enterCount) {
+        stageText.text = "Stage: " + stageName + "  |  EnterCount: " + enterCount;
+    }
+
+    public void RefreshRunningTime(float runningTime) {
+        runningTimeText.text = "RunningTime: " + runningTime.ToString("F1") + "s";
+    }
+
+    public void RefreshHP(RoleAttrValue hpValue) {
+        hpText.text = "HP: " + hpValue.Current + " / " + hpValue.Max;
+    }
+
+    public void RefreshMP(RoleAttrValue mpValue) {
+        mpText.text = "MP: " + mpValue.Current + " / " + mpValue.Max;
+    }
+
+    public void SetCanChangeHP(bool canChange) {
+        addHPButton.interactable = canChange;
+        reduceHPButton.interactable = canChange;
+        popupAddHPButton.interactable = canChange;
+    }
+
+    public void SetCanChangeMP(bool canChange) {
+        addMPButton.interactable = canChange;
+        reduceMPButton.interactable = canChange;
+        popupReduceMPButton.interactable = canChange;
+    }
+
     private void OnClickAddHP() {
-        if (presenter != null) {
-            presenter.OnClickAddHP();
+        if (controller != null) {
+            controller.AddHP();
         }
     }
 
     private void OnClickReduceHP() {
-        if (presenter != null) {
-            presenter.OnClickReduceHP();
+        if (controller != null) {
+            controller.ReduceHP();
         }
     }
 
     private void OnClickAddMP() {
-        if (presenter != null) {
-            presenter.OnClickAddMP();
+        if (controller != null) {
+            controller.AddMP();
         }
     }
 
     private void OnClickReduceMP() {
-        if (presenter != null) {
-            presenter.OnClickReduceMP();
+        if (controller != null) {
+            controller.ReduceMP();
         }
     }
 
     private void OnClickPopupAddHP() {
-        if (presenter != null) {
-            presenter.OnClickPopupChange(RoleAttrType.HP, RoleAttrOperationType.Add);
+        if (controller != null) {
+            controller.OpenPopup(RoleAttrType.HP, RoleAttrOperationType.Add);
         }
     }
 
     private void OnClickPopupReduceMP() {
-        if (presenter != null) {
-            presenter.OnClickPopupChange(RoleAttrType.MP, RoleAttrOperationType.Reduce);
+        if (controller != null) {
+            controller.OpenPopup(RoleAttrType.MP, RoleAttrOperationType.Reduce);
         }
     }
 
     private void OnClickNextStage() {
-        if (presenter != null) {
-            presenter.OnClickNextStage();
+        if (controller != null) {
+            controller.NextStage();
         }
     }
 
     private void OnClickReloadScene() {
-        if (presenter != null) {
-            presenter.OnClickReloadScene();
+        if (controller != null) {
+            controller.ReloadScene();
         }
     }
 
     private void OnClickToggleEmitter() {
-        if (presenter != null) {
-            presenter.OnClickToggleEmitter();
+        if (controller != null) {
+            controller.ToggleEmitter();
         }
     }
 
     private void OnClickClose() {
-        if (presenter != null) {
-            presenter.OnClickClose();
+        if (controller != null) {
+            controller.Close();
         }
     }
 

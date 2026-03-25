@@ -7,11 +7,9 @@ public sealed class AdjustAttrPopup : UIPanelBase {
     private InputField valueInputField;
     private Button confirmButton;
     private Button cancelButton;
-    private AdjustAttrPopupPresenter presenter;
+    private AdjustAttrPopupController controller;
 
     protected override void OnCreate() {
-        presenter = GetPresenter<AdjustAttrPopupPresenter>();
-
         Image mask = UIRuntimeWidgetFactory.CreateImage("Mask", RectTransform, new Color(0f, 0f, 0f, 0.5f));
         UIRuntimeWidgetFactory.StretchRect(mask.rectTransform);
 
@@ -20,27 +18,29 @@ public sealed class AdjustAttrPopup : UIPanelBase {
 
         titleText = CreateLabel(popupBackground.rectTransform, "Title", new Vector2(24f, -24f), new Vector2(360f, 30f), 28);
         descriptionText = CreateLabel(popupBackground.rectTransform, "Description", new Vector2(24f, -72f), new Vector2(360f, 28f), 20);
-        valueInputField = UIRuntimeWidgetFactory.CreateInputField("ValueInputField", popupBackground.rectTransform, string.Empty, "请输入数值", new Vector2(360f, 48f));
+        valueInputField = UIRuntimeWidgetFactory.CreateInputField("ValueInputField", popupBackground.rectTransform, string.Empty, "Input Value", new Vector2(360f, 48f));
         SetAnchor(valueInputField.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(360f, 48f), new Vector2(0f, -12f));
 
-        confirmButton = UIRuntimeWidgetFactory.CreateButton("ConfirmButton", popupBackground.rectTransform, "确认", new Vector2(140f, 42f));
-        cancelButton = UIRuntimeWidgetFactory.CreateButton("CancelButton", popupBackground.rectTransform, "取消", new Vector2(140f, 42f));
+        confirmButton = UIRuntimeWidgetFactory.CreateButton("ConfirmButton", popupBackground.rectTransform, "Confirm", new Vector2(140f, 42f));
+        cancelButton = UIRuntimeWidgetFactory.CreateButton("CancelButton", popupBackground.rectTransform, "Cancel", new Vector2(140f, 42f));
         SetAnchor(confirmButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(140f, 42f), new Vector2(-84f, 24f));
         SetAnchor(cancelButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(140f, 42f), new Vector2(84f, 24f));
 
         confirmButton.onClick.AddListener(OnClickConfirm);
         cancelButton.onClick.AddListener(OnClickCancel);
+        ShowDefault();
     }
 
-    public override void Refresh(UIStateBase state) {
-        AdjustAttrPopupUIState uiState = state as AdjustAttrPopupUIState;
-        if (uiState == null) {
-            return;
-        }
+    protected override void OnOpen() {
+        controller = new AdjustAttrPopupController(this);
+        controller.Bind();
+    }
 
-        titleText.text = uiState.Title;
-        descriptionText.text = uiState.Description;
-        valueInputField.text = uiState.DefaultValue;
+    protected override void OnClose() {
+        if (controller != null) {
+            controller.Unbind();
+            controller = null;
+        }
     }
 
     protected override void OnDestroyPanel() {
@@ -52,15 +52,25 @@ public sealed class AdjustAttrPopup : UIPanelBase {
         }
     }
 
+    public void ShowDefault() {
+        RefreshRequest("Adjust Attribute", "No request data", 0);
+    }
+
+    public void RefreshRequest(string title, string description, int defaultValue) {
+        titleText.text = title;
+        descriptionText.text = description;
+        valueInputField.text = defaultValue.ToString();
+    }
+
     private void OnClickConfirm() {
-        if (presenter != null) {
-            presenter.OnClickConfirm(valueInputField.text);
+        if (controller != null) {
+            controller.Confirm(valueInputField.text);
         }
     }
 
     private void OnClickCancel() {
-        if (presenter != null) {
-            presenter.OnClickCancel();
+        if (controller != null) {
+            controller.Cancel();
         }
     }
 

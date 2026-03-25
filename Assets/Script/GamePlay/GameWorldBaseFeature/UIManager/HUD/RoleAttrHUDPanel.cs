@@ -10,11 +10,9 @@ public sealed class RoleAttrHUDPanel : UIPanelBase {
     private Image hpFillImage;
     private Image mpFillImage;
     private Button detailButton;
-    private RoleAttrHUDPresenter presenter;
+    private RoleAttrHUDController controller;
 
     protected override void OnCreate() {
-        presenter = GetPresenter<RoleAttrHUDPresenter>();
-
         Image rootBackground = UIRuntimeWidgetFactory.CreateImage("HUDBackground", RectTransform, new Color(0.08f, 0.1f, 0.16f, 0.76f));
         SetAnchor(rootBackground.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(360f, 156f), new Vector2(18f, -18f));
 
@@ -25,24 +23,22 @@ public sealed class RoleAttrHUDPanel : UIPanelBase {
         hpText = CreateBar(rootBackground.rectTransform, "HP", new Vector2(16f, -98f), new Color(0.78f, 0.2f, 0.24f, 1f), out hpFillImage);
         mpText = CreateBar(rootBackground.rectTransform, "MP", new Vector2(16f, -126f), new Color(0.2f, 0.45f, 0.92f, 1f), out mpFillImage);
 
-        detailButton = UIRuntimeWidgetFactory.CreateButton("OpenDetailButton", rootBackground.rectTransform, "属性面板", new Vector2(92f, 32f));
+        detailButton = UIRuntimeWidgetFactory.CreateButton("OpenDetailButton", rootBackground.rectTransform, "Detail", new Vector2(92f, 32f));
         SetAnchor(detailButton.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(92f, 32f), new Vector2(-12f, -12f));
         detailButton.onClick.AddListener(OnClickOpenDetail);
+        ShowDefault();
     }
 
-    public override void Refresh(UIStateBase state) {
-        RoleAttrHUDUIState uiState = state as RoleAttrHUDUIState;
-        if (uiState == null) {
-            return;
-        }
+    protected override void OnOpen() {
+        controller = new RoleAttrHUDController(this);
+        controller.Bind();
+    }
 
-        roleNameText.text = uiState.RoleName;
-        stageNameText.text = uiState.StageName;
-        runningTimeText.text = uiState.RunningTimeText;
-        hpText.text = uiState.HPText;
-        mpText.text = uiState.MPText;
-        hpFillImage.fillAmount = uiState.HPPercent;
-        mpFillImage.fillAmount = uiState.MPPercent;
+    protected override void OnClose() {
+        if (controller != null) {
+            controller.Unbind();
+            controller = null;
+        }
     }
 
     protected override void OnDestroyPanel() {
@@ -51,9 +47,39 @@ public sealed class RoleAttrHUDPanel : UIPanelBase {
         }
     }
 
+    public void ShowDefault() {
+        RefreshRoleName("Role HUD");
+        RefreshStage("None");
+        RefreshRunningTime(0f);
+        RefreshHP(new RoleAttrValue(0, 0));
+        RefreshMP(new RoleAttrValue(0, 0));
+    }
+
+    public void RefreshRoleName(string roleName) {
+        roleNameText.text = roleName;
+    }
+
+    public void RefreshStage(string stageName) {
+        stageNameText.text = "Stage: " + stageName;
+    }
+
+    public void RefreshRunningTime(float runningTime) {
+        runningTimeText.text = "Time: " + runningTime.ToString("F1") + "s";
+    }
+
+    public void RefreshHP(RoleAttrValue hpValue) {
+        hpText.text = "HP  " + hpValue.Current + " / " + hpValue.Max;
+        hpFillImage.fillAmount = hpValue.Max <= 0 ? 0f : (float)hpValue.Current / hpValue.Max;
+    }
+
+    public void RefreshMP(RoleAttrValue mpValue) {
+        mpText.text = "MP  " + mpValue.Current + " / " + mpValue.Max;
+        mpFillImage.fillAmount = mpValue.Max <= 0 ? 0f : (float)mpValue.Current / mpValue.Max;
+    }
+
     private void OnClickOpenDetail() {
-        if (presenter != null) {
-            presenter.OnClickOpenMainPanel();
+        if (controller != null) {
+            controller.OpenMainPanel();
         }
     }
 
@@ -71,7 +97,7 @@ public sealed class RoleAttrHUDPanel : UIPanelBase {
         UIRuntimeWidgetFactory.StretchRect(fillImage.rectTransform);
         fillImage.type = Image.Type.Filled;
         fillImage.fillMethod = Image.FillMethod.Horizontal;
-        fillImage.fillOrigin = (int) Image.OriginHorizontal.Left;
+        fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
         fillImage.fillAmount = 1f;
 
         Text text = UIRuntimeWidgetFactory.CreateText(labelPrefix + "Text", background.rectTransform, string.Empty, 16, TextAnchor.MiddleLeft, Color.white);

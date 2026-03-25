@@ -10,5 +10,4 @@ public sealed class UIWindowConfig {
     public bool UseBackStack;
     public bool BlockRaycast;
     public Type PanelType;
-    public Type PresenterType;
 }

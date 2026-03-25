@@ -5,7 +5,7 @@ public sealed class UIRegistry {
     private readonly Dictionary<Type, UIWindowConfig> panelTypeDict = new Dictionary<Type, UIWindowConfig>();
     private readonly Dictionary<string, UIWindowConfig> uiIdDict = new Dictionary<string, UIWindowConfig>();
 
-    public void Register<TPanel, TPresenter>(
+    public void Register<TPanel>(
         string uiId,
         UILayer layer,
         UICacheMode cacheMode,
@@ -14,8 +14,7 @@ public sealed class UIRegistry {
         bool isFullScreen,
         bool useBackStack,
         bool blockRaycast)
-        where TPanel : UIPanelBase
-        where TPresenter : UIPresenterBase, new() {
+        where TPanel : UIPanelBase {
         UIWindowConfig config = new UIWindowConfig();
         config.UIId = uiId;
         config.PrefabKey = prefabKey;
@@ -26,7 +25,6 @@ public sealed class UIRegistry {
         config.UseBackStack = useBackStack;
         config.BlockRaycast = blockRaycast;
         config.PanelType = typeof(TPanel);
-        config.PresenterType = typeof(TPresenter);
 
         panelTypeDict[typeof(TPanel)] = config;
         uiIdDict[uiId] = config;

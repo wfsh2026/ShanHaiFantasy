@@ -5,19 +5,33 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
     private float logTimer;
     private float autoChangeTimer;
     private bool isDrainPhase;
+    private RoleAttrValue currentHPValue;
+    private RoleAttrValue currentMPValue;
 
     public override void OnInit() {
         data = manager.GetData<ClientTestModeData>();
         logTimer = 0f;
         autoChangeTimer = 0f;
         isDrainPhase = true;
+
+        if (data != null) {
+            data.HPValue.Bind(OnHPChanged, true);
+            data.MPValue.Bind(OnMPChanged, true);
+        }
     }
 
     public override void OnClear() {
+        if (data != null) {
+            data.HPValue.Unbind(OnHPChanged);
+            data.MPValue.Unbind(OnMPChanged);
+        }
+
         data = null;
         logTimer = 0f;
         autoChangeTimer = 0f;
         isDrainPhase = true;
+        currentHPValue = default(RoleAttrValue);
+        currentMPValue = default(RoleAttrValue);
     }
 
     public void Tick(float delta) {
@@ -94,10 +108,24 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
             AudioManager.Instance.PlaySfx("hp_change");
             AudioManager.Instance.PlaySfx("mp_change");
         }
+    }
 
-        if (data.HP <= 25 || data.MP <= 15) {
+    private void OnHPChanged(RoleAttrValue hpValue) {
+        currentHPValue = hpValue;
+        RefreshDrainPhase();
+    }
+
+    private void OnMPChanged(RoleAttrValue mpValue) {
+        currentMPValue = mpValue;
+        RefreshDrainPhase();
+    }
+
+    private void RefreshDrainPhase() {
+        if (currentHPValue.Current <= 25 || currentMPValue.Current <= 15) {
             isDrainPhase = false;
-        } else if (data.HP >= data.MaxHP && data.MP >= data.MaxMP) {
+        } else if (currentHPValue.Max > 0 && currentMPValue.Max > 0 &&
+                   currentHPValue.Current >= currentHPValue.Max &&
+                   currentMPValue.Current >= currentMPValue.Max) {
             isDrainPhase = true;
         }
     }

@@ -25,30 +25,25 @@ public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
         }
     }
 
-    public bool BeginLoad(SceneConfig config, SceneRequest request, SceneLoadingContext loadingContext, ClientUIFeatureManager uiManager, ClientInputFeatureManager inputFeatureManager) {
+    public bool BeginLoad(SceneConfig config, SceneRequest request, SceneLoadingContext loadingContext, ClientInputFeatureManager inputFeatureManager) {
         if (isLoading || config == null || request == null || loadingContext == null) {
             return false;
         }
 
-        StartCoroutine(CoLoadScene(config, request, loadingContext, uiManager, inputFeatureManager));
+        StartCoroutine(CoLoadScene(config, request, loadingContext, inputFeatureManager));
         return true;
     }
 
-    private IEnumerator CoLoadScene(SceneConfig config, SceneRequest request, SceneLoadingContext loadingContext, ClientUIFeatureManager uiManager, ClientInputFeatureManager inputFeatureManager) {
+    private IEnumerator CoLoadScene(SceneConfig config, SceneRequest request, SceneLoadingContext loadingContext, ClientInputFeatureManager inputFeatureManager) {
         isLoading = true;
         loadingContext.IsLoading = true;
         loadingContext.Step = SceneLoadingStep.ShowLoading;
         loadingContext.StepText = "Show Loading";
         loadingContext.Progress = 0.05f;
 
-        if (request.ShowLoadingUI && uiManager != null) {
-            uiManager.Open<LoadingPanel, LoadingPanelOpenData>(new LoadingPanelOpenData {
-                Title = "Loading",
-                StepText = "Preparing...",
-                Progress = loadingContext.Progress,
-            });
-
-            LoadingPanel loadingPanel = uiManager.GetPanel<LoadingPanel>();
+        if (request.ShowLoadingUI) {
+            UIManager.Instance.Open<LoadingPanel>();
+            LoadingPanel loadingPanel = UIManager.Instance.GetPanel<LoadingPanel>();
             if (loadingPanel != null) {
                 loadingPanel.RefreshByContext(loadingContext);
             }
@@ -63,21 +58,19 @@ public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
         loadingContext.Step = SceneLoadingStep.ClearUI;
         loadingContext.StepText = "Clear UI";
         loadingContext.Progress = 0.15f;
-        if (uiManager != null) {
-            if (request.ClearPopupUI) {
-                uiManager.CloseByLayer(UILayer.Popup);
-            }
-            if (request.ClearNormalUI) {
-                uiManager.CloseByLayer(UILayer.Normal);
-            }
-            if (!request.KeepHUD) {
-                uiManager.CloseByLayer(UILayer.HUD);
-            }
+        if (request.ClearPopupUI) {
+            UIManager.Instance.CloseByLayer(UILayer.Popup);
+        }
+        if (request.ClearNormalUI) {
+            UIManager.Instance.CloseByLayer(UILayer.Normal);
+        }
+        if (!request.KeepHUD) {
+            UIManager.Instance.CloseByLayer(UILayer.HUD);
+        }
 
-            LoadingPanel loadingPanel = uiManager.GetPanel<LoadingPanel>();
-            if (loadingPanel != null) {
-                loadingPanel.RefreshByContext(loadingContext);
-            }
+        LoadingPanel loadingPanelAfterClear = UIManager.Instance.GetPanel<LoadingPanel>();
+        if (loadingPanelAfterClear != null) {
+            loadingPanelAfterClear.RefreshByContext(loadingContext);
         }
 
         yield return null;
@@ -99,11 +92,9 @@ public sealed class SceneFlowRuntimeRunner : MonoBehaviour {
         while (!asyncOperation.isDone) {
             float sceneProgress = Mathf.Clamp01(asyncOperation.progress / 0.9f);
             loadingContext.Progress = 0.25f + sceneProgress * 0.7f;
-            if (uiManager != null) {
-                LoadingPanel loadingPanel = uiManager.GetPanel<LoadingPanel>();
-                if (loadingPanel != null) {
-                    loadingPanel.RefreshByContext(loadingContext);
-                }
+            LoadingPanel loadingPanel = UIManager.Instance.GetPanel<LoadingPanel>();
+            if (loadingPanel != null) {
+                loadingPanel.RefreshByContext(loadingContext);
             }
 
             yield return null;

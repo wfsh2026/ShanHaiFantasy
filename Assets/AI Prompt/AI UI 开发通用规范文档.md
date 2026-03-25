@@ -1,309 +1,278 @@
 # AI UI 开发通用规范文档
 
-## 1. 文档目的
+## 1. 目的
 
-本文档用于约束 `ShanHaiFantasy` 项目中 UI 框架相关的 AI 开发边界。
-从本文档生效开始，AI 在处理 UI 需求时，必须优先遵守本文档、`Assets/AI Prompt/代码规范.md`、`Assets/AI Prompt/目录规范.md`。
-
-UI 框架当前已经确定为：
-
-- 表现层使用 `UGUI`
-- 资源加载使用项目现有的 `Addressables` UI 加载封装
-- `UIManager` 作为客户端常驻 `GameWorld Feature`
-- `HUD` 使用独立层级
-- 弹窗必须支持结果返回机制
-- 所有 `Base` 目录默认冻结，修改前必须先得到用户明确同意
+本文档约束 `ShanHaiFantasy` 项目当前 UI 架构的 AI 开发边界。  
+当前 UI 已经明确采用简化调用链，后续 AI 不允许再按旧的 `Presenter / UIService / 整包 UIState` 方式继续扩写。
 
 ---
 
-## 2. 当前 UI 主链
+## 2. 当前合法 UI 主链
 
 当前唯一合法 UI 主链如下：
 
-`GameWorldClient -> ClientUIFeatureManager -> UIManager -> UIPanel / UIPresenter -> UIService -> ClientMode`
+`GameWorldClient -> ClientUIFeatureManager -> UIManager.Instance -> UIPanel -> UIController -> ClientModeData / ClientModeLogic`
 
-其中：
+说明：
 
-- `GameWorldClient`
-  只负责挂载客户端常驻 UI 功能
 - `ClientUIFeatureManager`
-  负责初始化 UI 根节点、层级、注册表、打开关闭入口
+  只负责 `UIManager.Instance` 的绑定和解绑，不承担业务调用入口。
+- `UIManager.Instance`
+  是唯一合法的 UI 开关入口。
 - `UIPanel`
-  只负责显示和用户输入转发
+  只负责控件创建、显示、按钮转发、局部刷新。
+- `UIController`
+  负责业务命令调用和字段绑定。
+- `ClientModeData / ClientModeLogic`
+  负责权威业务数据和业务行为。
+
+禁止恢复以下旧链路：
+
 - `UIPresenter`
-  负责 UI 逻辑组织和状态刷新
 - `UIService`
-  负责 UI 与模式数据、模式逻辑交互
-- `ClientMode`
-  负责权威业务数据和业务执行
-
-禁止 AI 恢复以下旧式写法：
-
-- UI 直接修改模式数据
-- 逻辑层直接操作具体 Panel 控件
-- 一个 UI 直接持有另一个 UI 的业务引用并相互调用
-- 绕过 `UIManager` 直接实例化、显示、关闭界面
+- `DataChanged` 整包广播
+- `BuildState / BuildDefaultState` 整页拼装刷新
 
 ---
 
-## 3. 当前目录约定
+## 3. 当前数据通信规则
 
-当前 UI 代码以项目实际目录为准：
+### 3.1 UI -> Logic
+
+标准链路：
+
+`Panel -> Controller -> Logic`
+
+适用场景：
+
+- 按钮点击
+- 输入确认
+- 打开弹窗
+- 切换阶段
+- 切场景
+
+禁止：
+
+- Panel 直接修改 `ClientModeData`
+- Panel 直接操作 `GameWorld` 业务逻辑
+- Panel 自己写业务判断
+- Controller 长期缓存 `Logic` 作为显示依赖
+
+### 3.2 Logic -> UI
+
+标准链路：
+
+`BindableValue<T> -> Controller 回调 -> Panel 局部刷新`
+
+适用场景：
+
+- HP 变化
+- MP 变化
+- StageName 变化
+- RunningTime 变化
+
+规则：
+
+- 逻辑层按字段更新绑定值
+- Controller 只绑定自己关心的字段
+- Panel 只刷新对应字段控件
+- 不允许整页重刷替代字段刷新
+- UI 侧长期只持有 `Data` 绑定，不长期持有 `Logic`
+
+### 3.3 UI -> UI
+
+标准链路：
+
+- 打开 / 关闭：
+  `UIManager.Instance.Open<TPanel>()`
+  `UIManager.Instance.Close<TPanel>()`
+- 弹窗返回结果：
+  `UIManager.Instance.OpenForResult<TPanel, TResult>()`
+
+规则：
+
+- UI 间不直接持有彼此业务引用
+- Popup 只返回 `UIResult`
+- 调用方收到结果后再决定是否调用逻辑层
+
+---
+
+## 4. 字段绑定规则
+
+当前 UI 下行刷新必须使用字段绑定。
+
+推荐结构：
+
+- `BindableValue<RoleAttrValue> HPValue`
+- `BindableValue<RoleAttrValue> MPValue`
+- `BindableValue<string> StageNameValue`
+- `BindableValue<float> RunningTimeValue`
+
+规则：
+
+- `Controller.Bind()` 时注册字段回调
+- 注册时使用立即回推当前值
+- `Controller.Unbind()` 时解除字段绑定
+- 只更新变更字段，不触发无关 UI 赋值
+
+禁止：
+
+- 使用单个 `DataChanged` 驱动全部 UI
+- 用一个大 `UIState` 承担所有显示字段
+- 某个字段变化时整页重新拼装字符串再赋值
+
+---
+
+## 5. Panel 规则
+
+`UIPanel` 只允许承担这些职责：
+
+- 创建 UI 控件
+- 注册按钮点击
+- 生命周期管理
+- 提供局部刷新方法
+
+推荐写法：
+
+- `RefreshHP(RoleAttrValue value)`
+- `RefreshMP(RoleAttrValue value)`
+- `RefreshStage(string stageName, int enterCount)`
+- `RefreshRunningTime(float runningTime)`
+
+禁止：
+
+- Panel 直接查找 `ClientModeLogic`
+- Panel 直接查找 `ClientModeData`
+- Panel 直接决定业务是否合法
+
+---
+
+## 6. Controller 规则
+
+`UIController` 是当前业务 UI 唯一合法的中间层。
+
+职责：
+
+- 绑定业务字段
+- 接收按钮命令
+- 在命令发生时按需转发到逻辑层
+- 驱动 Panel 局部刷新
+
+推荐写法：
+
+- `AddHP()`
+- `ReduceHP()`
+- `OpenPopup(...)`
+- `ReloadScene()`
+- `Bind()`
+- `Unbind()`
+
+禁止：
+
+- 再套一层 `Service`
+- 再套一层 `Presenter`
+- 在 Controller 里缓存整页 `UIState`
+- 把 `Logic` 当成长期显示数据源
+
+---
+
+## 7. Popup 规则
+
+Popup 不使用字段持续绑定，使用一次性请求数据 + 结果返回。
+
+标准链路：
+
+1. 调用方把请求数据写入逻辑层
+2. `UIManager.Instance.OpenForResult<Popup, Result>()`
+3. Popup 打开时读取当前请求数据
+4. Popup 关闭时返回 `UIResult`
+5. 调用方根据结果再调用逻辑层
+
+禁止：
+
+- Popup 自己直接改业务数据
+- Popup 自己长期监听字段
+
+---
+
+## 8. 目录约定
+
+当前 UI 相关目录如下：
 
 - `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/Common/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/HUD/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/TestUI/`
-- `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/Feature/`
 
-目录职责如下：
+目录职责：
 
 - `Base/`
-  放 UI 框架基础层、接口、层级、注册表、面板基类、Presenter 基类、加载适配器
+  UI 核心冻结层
 - `Common/`
-  放通用弹窗、通用提示、通用返回结果型 UI
+  通用弹窗和系统界面
 - `HUD/`
-  放常驻 HUD 类界面
+  常驻 HUD
 - `TestUI/`
-  放测试 UI、示例 UI、模式专属 UI 示例
-- `Feature/`
-  放 UI 相关功能入口或桥接 Feature
+  测试界面和示例界面
 
 ---
 
-## 4. 冻结边界
+## 9. 冻结边界
 
-以下目录和文件属于 UI 核心冻结层，AI 未经用户明确授权不得修改：
+以下内容默认冻结，AI 未经明确授权不得修改：
 
 - `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/Base/`
 - `Assets/Script/GamePlay/Client/GameWorld/Base/`
 
-特别说明：
+但本轮结构已经明确：
 
-- `Base/` 下所有 UI 框架文件默认冻结
-- 如需新增 UI 功能，优先在 `Common/`、`HUD/`、`TestUI/` 下新增
-- 如需改变 UI 主链、注册机制、层级机制、缓存机制、结果回传机制，必须先得到用户同意
-
----
-
-## 5. UI 标准对象
-
-UI 层统一只允许使用以下对象组织交互：
-
-- `UIOpenData`
-  只负责界面打开参数
-- `UIState`
-  只负责界面显示状态
-- `UIResult`
-  只负责弹窗或子界面的返回结果
-- `UICommand`
-  只负责描述用户意图
-- `UIService`
-  负责 UI 与模式逻辑交互
-
-规则如下：
-
-- `UIOpenData` 不允许直接传 `GameWorld`、`ModeData`、`ModeLogic`
-- `UIState` 不允许持有复杂业务对象引用
-- `UIResult` 不允许直接执行业务逻辑
-- `UICommand` 不允许直接改权威数据
+- `Base` 的当前合法结构是 `UIManager + UIPanelBase + UIControllerBase`
+- 不允许再恢复 `UIPresenterBase`
+- 不允许再恢复 `UIService`
 
 ---
 
-## 6. 三种交互规则
+## 10. 当前示例标准
 
-### 6.1 UI -> 模式逻辑
+当前测试示例以角色属性 UI 为准：
 
-标准链路：
-
-`Panel -> Presenter -> UIService -> ClientModeLogic / ClientModeManager`
-
-适用场景：
-
-- 点击按钮
-- 输入数值
-- 选择页签
-- 触发业务行为
-
-禁止：
-
-- Panel 直接改 `ClientModeData`
-- Panel 直接调 `GameWorld`
-- Panel 直接写业务判断
-
-### 6.2 模式逻辑 -> UI
-
-标准链路：
-
-`ClientModeData / ClientModeLogic -> Presenter -> UIState -> Panel.Refresh(state)`
-
-适用场景：
-
-- HP / MP 变化
-- 阶段变化
-- 倒计时变化
-- 分数变化
-
-禁止：
-
-- Logic 直接操作 Text、Image、Button
-- Data 层直接引用具体 Panel
-
-### 6.3 UI -> UI
-
-标准链路：
-
-- 导航型：`UIManager.Open / UIManager.Close`
-- 结果型：`UIManager.OpenForResult -> UIResult`
-- 共享状态型：共同监听同一份业务数据源
-
-适用场景：
-
-- 主界面打开子界面
-- 主界面打开确认弹窗
-- 弹窗返回用户选择结果
-- HUD 与主界面共同显示同一份业务状态
-
-禁止：
-
-- PanelA 直接持有 PanelB 并改动其业务状态
-- 两个 UI 之间直接传递权威业务数据
-
----
-
-## 7. UI 分类规则
-
-### 7.1 普通界面
-
-特点：
-
-- 一般位于 `Normal` 层
-- 支持返回栈
-- 可以缓存
-
-推荐：
-
-- `UICacheMode.HideOnClose`
-- `UIOpenMode.Single`
-
-### 7.2 弹窗
-
-特点：
-
-- 位于 `Popup` 层
-- 支持结果返回
-- 一般关闭即销毁
-
-推荐：
-
-- `UICacheMode.DestroyOnClose`
-- `UIOpenMode.Multi`
-
-### 7.3 HUD
-
-特点：
-
-- 位于 `HUD` 层
-- 常驻
-- 不进返回栈
-- 不从其他 UI 取数据
-
-推荐：
-
-- `UICacheMode.Permanent`
-- `UIOpenMode.Single`
-
----
-
-## 8. Addressables 规则
-
-UI 资源加载只能走当前项目已有的封装入口，不允许在业务 UI 中直接写原生 Addressables 调用。
-
-当前约定：
-
-- 通过 `UIAssetLoaderAdapter` 统一接入
-- `UIAssetLoaderAdapter` 内部调用现有 `ContentLoader`
-- 若未配置 prefab key，可使用运行时构建 UI 作为兜底测试方案
-
-禁止：
-
-- 在具体 Panel 中直接写 Addressables 加载代码
-- 在业务 UI 中自行维护另一套加载入口
-
----
-
-## 9. 示例规则
-
-当前 UI 示例以角色属性为准，包含：
-
-- `HP`
-- `MP`
 - `RoleAttrHUDPanel`
 - `RoleAttrPanel`
 - `AdjustAttrPopup`
 
-示例必须覆盖三类交互：
+示例必须覆盖：
 
-1. `UI -> 模式逻辑`
-   例如主面板点击 `+HP`、`-MP`
-2. `模式逻辑 -> UI`
-   例如模式内自动损耗或恢复 HP / MP 后通知 HUD 和主面板刷新
+1. `UI -> Logic`
+   例如 `+HP / -HP / +MP / -MP`
+2. `Logic -> UI`
+   例如 HP / MP / Stage / Time 字段变化
 3. `UI -> UI`
-   例如主面板打开属性调整弹窗，弹窗返回结果后再转给模式逻辑
+   例如主面板打开属性调整弹窗并接收结果
 
 ---
 
-## 10. AI 允许修改的范围
+## 11. AI 执行要求
 
-后续 AI 默认只允许修改：
-
-- `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/Common/`
-- `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/HUD/`
-- `Assets/Script/GamePlay/GameWorldBaseFeature/UIManager/TestUI/`
-
-以及：
-
-- 新增具体业务 UI 脚本
-- 新增具体业务 Presenter
-- 新增具体业务 UIService
-- 新增具体业务 OpenData / State / Result
-
-AI 默认不允许：
-
-- 擅自修改 `Base/`
-- 擅自修改 UI 主链
-- 擅自修改层级和注册核心机制
-- 擅自引入第二套 UI 管理结构
-
----
-
-## 11. AI 执行顺序要求
-
-AI 在执行 UI 相关需求时，必须遵守以下顺序：
+AI 处理 UI 需求时必须遵守：
 
 1. 先阅读本文档
-2. 再阅读 `Assets/AI Prompt/代码规范.md`
-3. 再阅读 `Assets/AI Prompt/目录规范.md`
-4. 判断需求是否会触碰 `Base/`
-5. 如果会触碰 `Base/`，必须先确认是否已获得用户授权
-6. 若未触碰 `Base/`，优先在 `Common/`、`HUD/`、`TestUI/` 中实现
-7. 所有业务 UI 必须优先复用现有 `UIManager` 主链
+2. 再阅读 `Assets/AI Prompt/AI 开发规范文档.md`
+3. 判断需求是否触碰 `Base`
+4. 若触碰 `Base`，必须先得到明确授权
+5. 若不触碰 `Base`，优先在 `Common / HUD / TestUI` 扩展
 
 ---
 
-## 12. 文档生效规则
+## 12. 长期有效规则
 
-从本文档创建开始，凡是 AI 处理 UI 框架、UI 示例、UI 扩展时，都必须默认遵守以下规则：
+从本文档生效开始，以下规则长期有效：
 
-- UI 只属于客户端
-- UI 主链默认冻结
-- `Base/` 默认冻结
-- 所有打开关闭必须统一走 `UIManager`
-- 所有弹窗必须支持结果返回机制
-- 所有业务数据交互必须遵守：
-  - `UI -> Logic`
-  - `Logic -> UI`
-  - `UI -> UI`
-  三条标准链路
-
-本文档与 `AI 开发规范文档.md`、`代码规范.md`、`目录规范.md` 共同构成当前项目的 AI UI 开发约束基础。
+- UI 只属于 Client
+- UIManager 单例是唯一 UI 开关入口
+- UI 与 Logic 的上行走直接命令调用
+- UI 长期只绑定 Data，不长期持有 Logic
+- Logic 只修改 Data，必要时也从 Data 绑定做联动
+- Logic 与 UI 的下行走字段绑定
+- UI 只做局部刷新
+- Popup 走一次性请求 + 结果返回
+- 不再允许恢复 `Presenter / UIService / 整包 UIState` 主链

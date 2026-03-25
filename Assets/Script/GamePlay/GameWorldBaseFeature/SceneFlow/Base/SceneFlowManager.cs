@@ -3,12 +3,10 @@ using UnityEngine.SceneManagement;
 
 public sealed class SceneFlowManager {
     private readonly SceneRegistry sceneRegistry;
-    private readonly ClientUIFeatureManager uiManager;
     private readonly ClientInputFeatureManager inputFeatureManager;
 
-    public SceneFlowManager(SceneRegistry registry, ClientUIFeatureManager targetUIManager, ClientInputFeatureManager targetInputFeatureManager) {
+    public SceneFlowManager(SceneRegistry registry, ClientInputFeatureManager targetInputFeatureManager) {
         sceneRegistry = registry;
-        uiManager = targetUIManager;
         inputFeatureManager = targetInputFeatureManager;
     }
 
@@ -79,7 +77,7 @@ public sealed class SceneFlowManager {
         loadingContext.StepText = "Prepare Leave";
         loadingContext.Reason = request.Reason;
 
-        return SceneFlowRuntimeRunner.Instance.BeginLoad(config, request, loadingContext, uiManager, inputFeatureManager);
+        return SceneFlowRuntimeRunner.Instance.BeginLoad(config, request, loadingContext, inputFeatureManager);
     }
 
     public SceneRequest BuildDefaultRequest(SceneConfig config, string reason) {

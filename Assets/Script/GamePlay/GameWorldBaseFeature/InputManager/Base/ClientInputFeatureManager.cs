@@ -1,6 +1,5 @@
 public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     private InputManager inputManager;
-    private ClientUIFeatureManager uiManager;
     private GlobalInputHandler globalInputHandler;
     private PopupInputHandler popupInputHandler;
     private UIInputHandler uiInputHandler;
@@ -12,11 +11,10 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     }
 
     protected override void OnInit() {
-        uiManager = gameWorld.GetExtendFeature<ClientUIFeatureManager>();
         inputManager = new InputManager();
-        globalInputHandler = new GlobalInputHandler(uiManager);
-        popupInputHandler = new PopupInputHandler(uiManager);
-        uiInputHandler = new UIInputHandler(uiManager);
+        globalInputHandler = new GlobalInputHandler();
+        popupInputHandler = new PopupInputHandler();
+        uiInputHandler = new UIInputHandler();
 
         inputManager.RegisterHandler(InputContextType.Popup, popupInputHandler, 100);
         inputManager.RegisterHandler(InputContextType.UI, uiInputHandler, 90);
@@ -36,7 +34,6 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
             inputManager.Clear();
         }
 
-        uiManager = null;
         globalInputHandler = null;
         popupInputHandler = null;
         uiInputHandler = null;
@@ -65,8 +62,8 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     }
 
     private void UpdateContexts() {
-        bool hasPopup = uiManager != null && uiManager.IsOpen<AdjustAttrPopup>();
-        bool hasMainPanel = uiManager != null && uiManager.IsOpen<RoleAttrPanel>();
+        bool hasPopup = UIManager.Instance.IsOpen<AdjustAttrPopup>();
+        bool hasMainPanel = UIManager.Instance.IsOpen<RoleAttrPanel>();
 
         inputManager.SetContextActive(InputContextType.Block, false);
         inputManager.SetContextActive(InputContextType.Popup, hasPopup);
