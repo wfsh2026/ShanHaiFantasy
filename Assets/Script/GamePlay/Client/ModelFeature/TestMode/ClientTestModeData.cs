@@ -138,6 +138,22 @@ public sealed class ClientTestModeData : AbsModeData {
         StageNameValue.SetValue(stageName);
     }
 
+    public void ApplyConfig(TestModeConfig config) {
+        if (config == null) {
+            return;
+        }
+
+        string configRoleName = string.IsNullOrEmpty(config.RoleName) ? DEFAULT_ROLE_NAME : config.RoleName;
+        string configStageName = string.IsNullOrEmpty(config.DefaultStageName) ? DEFAULT_STAGE_NAME : config.DefaultStageName;
+        int configMaxHP = ClampValue(config.MaxHP, 1, int.MaxValue);
+        int configMaxMP = ClampValue(config.MaxMP, 1, int.MaxValue);
+
+        RoleNameValue.SetValue(configRoleName);
+        StageNameValue.SetValue(configStageName);
+        HPValue.SetValue(new RoleAttrValue(configMaxHP, configMaxHP));
+        MPValue.SetValue(new RoleAttrValue(configMaxMP, configMaxMP));
+    }
+
     public void Tick(float delta) {
         RunningTimeValue.SetValue(RunningTime + delta);
     }

@@ -41,6 +41,7 @@
 - `Assets/Script/GamePlay/GameWorldBaseFeature/InputManager/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/SceneFlow/Base/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/Base/`
+- `Assets/Script/GamePlay/GameWorldBaseFeature/ConfigManager/Base/`
 
 业务扩展目录：
 
@@ -52,6 +53,7 @@
 - `Assets/Script/GamePlay/GameWorldBaseFeature/InputManager/TestInput/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/Common/`
 - `Assets/Script/GamePlay/GameWorldBaseFeature/AudioManager/TestAudio/`
+- `Assets/ToBundle/Configs/`
 
 ---
 
@@ -113,6 +115,12 @@
 
 `GameWorldClient -> ClientAudioFeatureManager -> AudioManager -> AudioEmitter / 业务调用`
 
+### 5.6 Config
+
+当前合法链路：
+
+`GameWorldClient -> ClientConfigFeatureManager -> ConfigManager.Instance -> ScriptableObject Config`
+
 ---
 
 ## 6. AI 允许修改的范围
@@ -130,6 +138,7 @@
 - 新增业务 UI
 - 新增业务 Input Handler
 - 新增业务音频触发脚本
+- 新增业务配置类和配置资产
 
 如果需求触碰以下内容，必须先得到明确授权：
 
@@ -151,6 +160,7 @@
 - 绕过 `InputManager` 在业务层直接到处写 `Input.GetKeyDown`
 - 绕过 `SceneFlowManager` 在业务 UI 或业务逻辑里直接切场景
 - 绕过 `AudioManager` 在业务层到处直接管理 `AudioSource`
+- 绕过 `ConfigManager.Instance` 在业务层到处直接加载配置资源
 - 在 UI 中恢复 `UIPresenter / UIService / 整包 UIState`
 
 ---
@@ -166,8 +176,9 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 5. 若需求涉及 Input，再阅读 `Assets/AI Prompt/AI 输入系统开发规范.md`
 6. 若需求涉及 SceneFlow，再阅读 `Assets/AI Prompt/AI 场景流转开发规范.md`
 7. 若需求涉及 Audio，再阅读 `Assets/AI Prompt/AI 音频开发规范.md`
-8. 判断需求是否触碰主链或 Base
-9. 若触碰冻结层，必须先确认已获授权
+8. 若需求涉及 Config，再阅读 `Assets/AI Prompt/AI 配置文件创建规范.md`
+9. 判断需求是否触碰主链或 Base
+10. 若触碰冻结层，必须先确认已获授权
 
 ---
 
@@ -182,4 +193,5 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 - Input 必须统一走 `InputManager`
 - SceneFlow 必须统一走 `SceneFlowManager`
 - Audio 必须统一走 `AudioManager`
+- Config 必须统一走 `ConfigManager.Instance`
 - UI 数据刷新必须使用字段绑定

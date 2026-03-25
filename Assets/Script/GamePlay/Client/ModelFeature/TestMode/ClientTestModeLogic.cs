@@ -1,9 +1,20 @@
 using UnityEngine;
 
 public sealed class ClientTestModeLogic : AbsModeLogic {
+    private const float DEFAULT_AUTO_CHANGE_INTERVAL = 2f;
+    private const int DEFAULT_DRAIN_HP_DELTA = -8;
+    private const int DEFAULT_DRAIN_MP_DELTA = -5;
+    private const int DEFAULT_RECOVER_HP_DELTA = 6;
+    private const int DEFAULT_RECOVER_MP_DELTA = 4;
+
     private ClientTestModeData data;
     private float logTimer;
     private float autoChangeTimer;
+    private float autoChangeInterval;
+    private int drainHPDelta;
+    private int drainMPDelta;
+    private int recoverHPDelta;
+    private int recoverMPDelta;
     private bool isDrainPhase;
     private RoleAttrValue currentHPValue;
     private RoleAttrValue currentMPValue;
@@ -12,12 +23,19 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         data = manager.GetData<ClientTestModeData>();
         logTimer = 0f;
         autoChangeTimer = 0f;
+        autoChangeInterval = DEFAULT_AUTO_CHANGE_INTERVAL;
+        drainHPDelta = DEFAULT_DRAIN_HP_DELTA;
+        drainMPDelta = DEFAULT_DRAIN_MP_DELTA;
+        recoverHPDelta = DEFAULT_RECOVER_HP_DELTA;
+        recoverMPDelta = DEFAULT_RECOVER_MP_DELTA;
         isDrainPhase = true;
 
         if (data != null) {
             data.HPValue.Bind(OnHPChanged, true);
             data.MPValue.Bind(OnMPChanged, true);
         }
+
+        ConfigManager.Instance.Load<TestModeConfig>(OnConfigLoaded);
     }
 
     public override void OnClear() {
@@ -29,6 +47,11 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         data = null;
         logTimer = 0f;
         autoChangeTimer = 0f;
+        autoChangeInterval = DEFAULT_AUTO_CHANGE_INTERVAL;
+        drainHPDelta = DEFAULT_DRAIN_HP_DELTA;
+        drainMPDelta = DEFAULT_DRAIN_MP_DELTA;
+        recoverHPDelta = DEFAULT_RECOVER_HP_DELTA;
+        recoverMPDelta = DEFAULT_RECOVER_MP_DELTA;
         isDrainPhase = true;
         currentHPValue = default(RoleAttrValue);
         currentMPValue = default(RoleAttrValue);
@@ -43,7 +66,7 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         logTimer += delta;
         autoChangeTimer += delta;
 
-        if (autoChangeTimer >= 2f) {
+        if (autoChangeTimer >= autoChangeInterval) {
             autoChangeTimer = 0f;
             ApplyAutoChange();
         }
@@ -98,16 +121,29 @@ public sealed class ClientTestModeLogic : AbsModeLogic {
         }
 
         if (isDrainPhase) {
-            data.ChangeHP(-8);
-            data.ChangeMP(-5);
+            data.ChangeHP(drainHPDelta);
+            data.ChangeMP(drainMPDelta);
             AudioManager.Instance.PlaySfx("hp_change");
             AudioManager.Instance.PlaySfx("mp_change");
         } else {
-            data.ChangeHP(6);
-            data.ChangeMP(4);
+            data.ChangeHP(recoverHPDelta);
+            data.ChangeMP(recoverMPDelta);
             AudioManager.Instance.PlaySfx("hp_change");
             AudioManager.Instance.PlaySfx("mp_change");
         }
+    }
+
+    private void OnConfigLoaded(TestModeConfig config) {
+        if (data == null || config == null) {
+            return;
+        }
+
+        data.ApplyConfig(config);
+        autoChangeInterval = Mathf.Max(0.1f, config.AutoChangeInterval);
+        drainHPDelta = config.DrainHPDelta;
+        drainMPDelta = config.DrainMPDelta;
+        recoverHPDelta = config.RecoverHPDelta;
+        recoverMPDelta = config.RecoverMPDelta;
     }
 
     private void OnHPChanged(RoleAttrValue hpValue) {
