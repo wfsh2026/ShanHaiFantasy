@@ -277,6 +277,42 @@ public sealed class UIManager : IUIManager {
             false,
             false,
             true);
+        registry.Register<RoomEntryPanel>(
+            "RoomEntryPanel",
+            UILayer.Normal,
+            UICacheMode.HideOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            true,
+            false,
+            true);
+        registry.Register<JoinRoomPopup>(
+            "JoinRoomPopup",
+            UILayer.Popup,
+            UICacheMode.DestroyOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            false,
+            true,
+            true);
+        registry.Register<RoomPanel>(
+            "RoomPanel",
+            UILayer.Normal,
+            UICacheMode.HideOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            true,
+            false,
+            true);
+        registry.Register<RoomNoticePopup>(
+            "RoomNoticePopup",
+            UILayer.Popup,
+            UICacheMode.DestroyOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            false,
+            false,
+            true);
     }
 
     private UIPanelBase GetReusablePanel(UIWindowConfig config) {

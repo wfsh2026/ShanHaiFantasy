@@ -160,9 +160,11 @@
 
 ### 5.11 NetworkSync
 
-当前定位：
+当前合法链路：
 
-`NetworkSync` 当前属于预研 / 保留模块，不属于默认可直接接入的正式主链。
+`GameWorldClient -> ClientNetworkFeatureManager -> NetworkSyncClient`
+
+`GameWorldServer -> ServerNetworkFeatureManager -> NetworkSyncServer`
 
 ### 5.12 Client 初始化顺序
 
@@ -176,7 +178,8 @@
 6. `ClientSceneFlowFeatureManager`
 7. `ClientCameraFeatureManager`
 8. `ClientPoolFeatureManager`
-9. `ClientModeFeatureManager`
+9. `ClientNetworkFeatureManager`
+10. `ClientModeFeatureManager`
 
 规则：
 
@@ -279,7 +282,7 @@
 - 在 UI 中恢复 `UIPresenter / UIService / 整包 UIState`
 - 在 `Client` 模块中混入 `Server` 专属逻辑
 - 在 `Server` 或 `Host` 中直接依赖客户端表现层模块
-- 未经授权直接把 `NetworkSync` 并入现有正式主链
+- 绕过 `ClientNetworkFeatureManager / ServerNetworkFeatureManager` 直接在业务层 new 正式网络主链
 - 修改框架后不补文档、不补验证入口
 
 ---
@@ -346,20 +349,20 @@ AI 新增通用模块时，必须遵守以下流程：
 AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 
 1. 先阅读本文档
-2. 再阅读 `Assets/AI Prompt/代码规范.md`
-3. 再阅读 `Assets/AI Prompt/目录规范.md`
-4. 若需求涉及 UI，再阅读 `Assets/AI Prompt/AI UI 开发通用规范文档.md`
-5. 若需求涉及 Input，再阅读 `Assets/AI Prompt/AI 输入系统开发规范.md`
-6. 若需求涉及 SceneFlow，再阅读 `Assets/AI Prompt/AI 场景流转开发规范.md`
-7. 若需求涉及 Audio，再阅读 `Assets/AI Prompt/AI 音频开发规范.md`
-8. 若需求涉及 Config，再阅读 `Assets/AI Prompt/AI 配置文件创建规范.md`
-9. 若需求涉及 SaveData，再阅读 `Assets/AI Prompt/AI 存档开发规范文档.md`
-10. 若需求涉及 Camera，再阅读 `Assets/AI Prompt/AI 相机开发规范.md`
-11. 若需求涉及 Pool，再阅读 `Assets/AI Prompt/AI 对象池开发规范.md`
-12. 若需求涉及 GameWorld，再阅读 `Assets/AI Prompt/AI GameWorld 开发规范.md`
-13. 若需求涉及 Mode，再阅读 `Assets/AI Prompt/AI Mode 开发规范.md`
-14. 若需求涉及 Addressables，再阅读 `Assets/AI Prompt/AI Addressables 开发规范.md`
-15. 若需求涉及 NetworkSync，再阅读 `Assets/AI Prompt/AI NetworkSync 开发规范.md`
+2. 再阅读 `Assets/Project/AIPrompt/AIStandards/代码规范.md`
+3. 再阅读 `Assets/Project/AIPrompt/AIStandards/目录规范.md`
+4. 若需求涉及 UI，再阅读 `Assets/Project/AIPrompt/AIStandards/AI UI 开发通用规范文档.md`
+5. 若需求涉及 Input，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 输入系统开发规范.md`
+6. 若需求涉及 SceneFlow，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 场景流转开发规范.md`
+7. 若需求涉及 Audio，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 音频开发规范.md`
+8. 若需求涉及 Config，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 配置文件创建规范.md`
+9. 若需求涉及 SaveData，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 存档开发规范文档.md`
+10. 若需求涉及 Camera，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 相机开发规范.md`
+11. 若需求涉及 Pool，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 对象池开发规范.md`
+12. 若需求涉及 GameWorld，再阅读 `Assets/Project/AIPrompt/AIStandards/AI GameWorld 开发规范.md`
+13. 若需求涉及 Mode，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Mode 开发规范.md`
+14. 若需求涉及 Addressables，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Addressables 开发规范.md`
+15. 若需求涉及 NetworkSync，再阅读 `Assets/Project/AIPrompt/AIStandards/AI NetworkSync 开发规范.md`
 16. 判断需求是否触碰主链或 Base
 17. 若触碰冻结层，必须先确认已获授权
 
@@ -383,15 +386,15 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 - Camera 必须统一走 `CameraManager.Instance`
 - Pool 必须统一走 `PoolManager.Instance`
 - Addressables 必须统一走现有加载模块
-- NetworkSync 默认按保留模块处理
+- NetworkSync 正式接入必须走 `ClientNetworkFeatureManager / ServerNetworkFeatureManager`
 - UI 数据刷新必须使用字段绑定
 - `UITestScene` 是当前默认综合验证入口
 # 总规范补充（2026-03-26）
 
 ## NetworkSync 当前执行规则
-- `NetworkSync` 仍视为独立预研模块，不直接并入正式 `GameWorld` 主链。
+- `NetworkSync` 已正式纳入 `GameWorld` 主链。
 - 修改 `NetworkSync` 时，必须同时遵守：
-  - `Assets/AI Prompt/AI NetworkSync 开发规范.md`
+  - `Assets/Project/AIPrompt/AIStandards/AI NetworkSync 开发规范.md`
   - 当前总规范中的 Base 冻结与验证规则
 - `NetworkSync` 公共协议层不得直接依赖 `Mirror`。
 - `NetworkSync` 新增协议或同步逻辑后，必须补 `UITestScene` 本地回环测试入口或更新现有测试链。
@@ -401,7 +404,7 @@ AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
   用于验证 `NetworkSync` 的本地回环同步链。
 # 阅读顺序补充（2026-03-26）
 - AI 开始理解项目整体结构时，先阅读：
-  - `Assets/AI Prompt/AI 整体架构设计文档.md`
+  - `Assets/Project/AIPrompt/AIStandards/AI 整体架构设计文档.md`
 - AI 开始准备实际改动时，再继续阅读：
-  - `Assets/AI Prompt/AI 开发规范文档.md`
+  - `Assets/Project/AIPrompt/AIStandards/AI 开发规范文档.md`
   - 对应模块子规范文档

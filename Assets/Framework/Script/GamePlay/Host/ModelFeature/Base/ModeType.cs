@@ -1,3 +1,5 @@
 public enum ModeType {
-    Test = 0
+    None = 0,
+    Room = 1,
+    Test = 2
 }

@@ -17,7 +17,7 @@ public class GameWorldClient : System.IDisposable {
 
         isStarted = true;
         gameWorld.GameState = GameWorld.GameStateType.Running;
-        // 先配置和存档，再 UI、音频、输入、场景流转，最后进入具体模式。
+        // 先配置和存档，再基础系统与网络组件，最后进入具体模式。
         gameWorld.AddExtendFeature<ClientConfigFeatureManager>();
         gameWorld.AddExtendFeature<ClientSaveDataFeatureManager>();
         gameWorld.AddExtendFeature<ClientUIFeatureManager>();
@@ -26,6 +26,7 @@ public class GameWorldClient : System.IDisposable {
         gameWorld.AddExtendFeature<ClientSceneFlowFeatureManager>();
         gameWorld.AddExtendFeature<ClientCameraFeatureManager>();
         gameWorld.AddExtendFeature<ClientPoolFeatureManager>();
+        gameWorld.AddExtendFeature<ClientNetworkFeatureManager>();
         gameWorld.AddExtendFeature<ClientModeFeatureManager>();
     }
 

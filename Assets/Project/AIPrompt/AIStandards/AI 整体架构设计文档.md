@@ -276,29 +276,32 @@
 ## 14. NetworkSync 设计
 
 ### 14.1 当前定位
-- 当前是独立预研模块
-- 不直接纳入正式 `GameWorld` 业务主链
-- 但已按当前规范做了生命周期和测试收口
+- 当前已是正式基础网络组件
+- 通过 `ClientNetworkFeatureManager / ServerNetworkFeatureManager` 接入 `GameWorld`
+- 业务协议通过 `Module + Proxy / Handler` 扩展，不直接写进网络内核
 
 ### 14.2 当前主链
-`NetworkSyncServer / NetworkSyncClient`
--> `NetworkSyncRegistry`
--> `NetworkSyncReplicationManager`
--> `Transport`
+`GameWorldClient -> ClientNetworkFeatureManager -> NetworkSyncClient`
+
+`GameWorldServer -> ServerNetworkFeatureManager -> NetworkSyncServer`
+
+`业务层 -> ClientRoomNetProxy -> NetworkSyncRoomClientModule -> NetworkSyncClient`
 
 ### 14.3 当前原则
 - 协议公共层不直接依赖 `Mirror`
 - `Mirror` 依赖只留在 `NetworkSyncMirrorTransport.cs`
 - client/server 支持显式 `Dispose()`
+- 本地回环传输只用于测试，不作为正式线上传输实现
 
 ### 14.4 当前测试
 - `UITestScene`
-- `RoleAttrPanel -> Run Network Demo`
+- `RoleAttrPanel -> Run Room Demo`
 - 使用本地回环传输验证：
-  - `Cmd`
-  - `Server 校验`
-  - `Rpc / Delta`
-  - `Client 世界状态更新`
+  - Host 创建房间
+  - 客户端加入房间
+  - 房主开始游戏
+  - 开始后禁止继续加入
+  - 房主离开解散房间
 
 ## 15. 当前最重要的数据归属规则
 

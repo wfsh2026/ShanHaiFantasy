@@ -12,6 +12,7 @@ public class GameWorldServer : System.IDisposable {
         }
 
         isStarted = true;
+        gameWorld.AddExtendFeature<ServerNetworkFeatureManager>();
         gameWorld.AddExtendFeature<ServerSceneFeatureManager>();
         gameWorld.AddExtendFeature<ServerModeFeatureManager>();
         gameWorld.GameState = GameWorld.GameStateType.Running;

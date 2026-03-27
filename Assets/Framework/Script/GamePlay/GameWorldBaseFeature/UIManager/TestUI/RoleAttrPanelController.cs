@@ -144,13 +144,13 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
 
     public void RunNetworkDemo() {
         AudioManager.Instance.PlayUISfx("ui_click");
-        NetworkSyncRoleFireLocalDemo demo = NetworkSyncRoleFireLocalDemo.EnsureInstance();
+        NetworkSyncRoomLocalDemo demo = NetworkSyncRoomLocalDemo.EnsureInstance();
         if (demo == null) {
             panel.RefreshNetworkDemoResult("Create demo failed.");
             return;
         }
 
-        string result = demo.RunRoleFireDemoOnce();
+        string result = demo.RunRoomLifecycleDemoOnce();
         panel.RefreshNetworkDemoResult(result);
     }
 

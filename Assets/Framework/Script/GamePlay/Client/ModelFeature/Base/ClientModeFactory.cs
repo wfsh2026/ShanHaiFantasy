@@ -5,6 +5,9 @@ public static class ClientModeFactory {
         }
 
         switch (modeType) {
+            case ModeType.Room:
+                gameWorld.AddExtendFeature<ClientRoomModeManager>();
+                break;
             case ModeType.Test:
                 gameWorld.AddExtendFeature<ClientTestModeManager>();
                 break;

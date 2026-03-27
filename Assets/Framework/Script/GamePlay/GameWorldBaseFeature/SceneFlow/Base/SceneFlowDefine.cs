@@ -4,6 +4,8 @@
 public enum SceneId {
     None = 0,
     UITest = 1,
+    RoomEntry = 2,
+    BattleTest = 3,
 }
 
 /// <summary>

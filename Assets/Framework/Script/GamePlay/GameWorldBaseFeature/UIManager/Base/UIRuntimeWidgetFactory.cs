@@ -87,6 +87,9 @@ public static class UIRuntimeWidgetFactory {
         InputField inputField = background.gameObject.AddComponent<InputField>();
         Text text = CreateText("Text", rectTransform, defaultValue, 24, TextAnchor.MiddleLeft, Color.white);
         Text placeholder = CreateText("Placeholder", rectTransform, placeholderText, 24, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.35f));
+        // InputField 的文本区域必须先拉伸到背景内部，否则默认零尺寸会导致占位文本和输入内容都不可见。
+        StretchRect(text.rectTransform);
+        StretchRect(placeholder.rectTransform);
         text.rectTransform.offsetMin = new Vector2(16f, 10f);
         text.rectTransform.offsetMax = new Vector2(-16f, -10f);
         placeholder.rectTransform.offsetMin = new Vector2(16f, 10f);
