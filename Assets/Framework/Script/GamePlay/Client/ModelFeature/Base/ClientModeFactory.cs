@@ -11,6 +11,9 @@ public static class ClientModeFactory {
             case ModeType.Test:
                 gameWorld.AddExtendFeature<ClientTestModeManager>();
                 break;
+            case ModeType.Battle:
+                gameWorld.AddExtendFeature<ClientBattleModeManager>();
+                break;
         }
     }
 }

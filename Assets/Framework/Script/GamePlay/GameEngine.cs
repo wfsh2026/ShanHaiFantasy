@@ -7,7 +7,9 @@ public class GameEngine : MonoBehaviour {
     private GameWorld gameWorld;
 
     private void Start() {
-        gameWorld = new GameWorld(startServer, startClient);
+        bool resolvedStartServer = ResolveStartServer();
+        bool resolvedStartClient = ResolveStartClient();
+        gameWorld = new GameWorld(resolvedStartServer, resolvedStartClient);
         gameWorld.Init();
     }
 
@@ -38,5 +40,21 @@ public class GameEngine : MonoBehaviour {
         if (gameWorld != null) {
             gameWorld.OnFixedUpdate(Time.fixedDeltaTime);
         }
+    }
+
+    private bool ResolveStartServer() {
+        if (NetworkSyncMirrorRoomRuntime.HasActiveServerRuntime) {
+            return true;
+        }
+
+        return startServer;
+    }
+
+    private bool ResolveStartClient() {
+        if (NetworkSyncMirrorRoomRuntime.HasActiveClientRuntime) {
+            return true;
+        }
+
+        return startClient;
     }
 }

@@ -54,11 +54,11 @@ public sealed class RoleAttrPanel : UIPanelBase {
         toggleEmitterButton = CreateButton(panelBackground.rectTransform, "ToggleEmitterButton", "Toggle Emitter", new Vector2(332f, -356f), new Vector2(146f, 42f), OnClickToggleEmitter);
         spawnCubeButton = CreateButton(panelBackground.rectTransform, "SpawnCubeButton", "Spawn Cube", new Vector2(24f, -356f), new Vector2(130f, 42f), OnClickSpawnCube);
         recycleCubeButton = CreateButton(panelBackground.rectTransform, "RecycleCubeButton", "Recycle Cube", new Vector2(170f, -356f), new Vector2(130f, 42f), OnClickRecycleCube);
-        networkDemoButton = CreateButton(panelBackground.rectTransform, "NetworkDemoButton", "Run Room Demo", new Vector2(332f, -408f), new Vector2(146f, 42f), OnClickRunNetworkDemo);
+        networkDemoButton = CreateButton(panelBackground.rectTransform, "NetworkDemoButton", "Run Net Demo", new Vector2(332f, -408f), new Vector2(146f, 42f), OnClickRunNetworkDemo);
         closeButton = CreateButton(panelBackground.rectTransform, "CloseButton", "Close", new Vector2(508f, -408f), new Vector2(146f, 42f), OnClickClose);
 
         Text tipsText = CreateLabel(panelBackground.rectTransform, "Tips", new Vector2(24f, -504f), new Vector2(620f, 56f), 18, TextAnchor.UpperLeft);
-        tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio, Pool, NetworkSync.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled, cubes are spawned from prefab pool, room demo validates host-authoritative room sync.";
+        tipsText.text = "Flow Demo: UI, Input, SceneFlow, Audio, Pool, NetworkSync.\nButtons play UI sound, HP/MP change drives mode audio, emitter object can be toggled, cubes are spawned from prefab pool, net demo validates room start plus battle snapshot sync.";
         ShowDefault();
     }
 
@@ -85,7 +85,7 @@ public sealed class RoleAttrPanel : UIPanelBase {
         RefreshRunningTime(0f);
         RefreshHP(new RoleAttrValue(0, 0));
         RefreshMP(new RoleAttrValue(0, 0));
-        RefreshNetworkDemoResult("Room network demo not executed.");
+        RefreshNetworkDemoResult("Room: not executed | Battle: not executed");
         SetCanChangeHP(false);
         SetCanChangeMP(false);
     }
@@ -111,7 +111,7 @@ public sealed class RoleAttrPanel : UIPanelBase {
     }
 
     public void RefreshNetworkDemoResult(string resultText) {
-        networkDemoText.text = "NetworkSync Room: " + (string.IsNullOrEmpty(resultText) ? "None" : resultText);
+        networkDemoText.text = "NetworkSync: " + (string.IsNullOrEmpty(resultText) ? "None" : resultText);
     }
 
     public void SetCanChangeHP(bool canChange) {

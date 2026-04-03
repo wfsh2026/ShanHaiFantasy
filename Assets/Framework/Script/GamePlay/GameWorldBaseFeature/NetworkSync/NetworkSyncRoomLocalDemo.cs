@@ -55,7 +55,7 @@ public sealed class NetworkSyncRoomLocalDemo : MonoBehaviour {
 
         NetworkSyncLocalLoopbackServerTransport serverTransport = hub.CreateServerTransport();
         server = new NetworkSyncServer(serverTransport);
-        serverModule = new NetworkSyncRoomServerModule("BattleTestScene");
+        serverModule = new NetworkSyncRoomServerModule("BattleTestScene", allowCreateInviteCodeFallback: true);
         server.RegisterModule(serverModule);
         serverHandler = new ServerRoomNetHandler(serverModule);
 
@@ -93,6 +93,8 @@ public sealed class NetworkSyncRoomLocalDemo : MonoBehaviour {
         lateGuestRoomProxy.JoinRoom(inviteCode, "Late_Guest", "avatar_player_late");
         bool lateJoinFailed = !string.IsNullOrEmpty(lateGuestRoomModule.LastFailureMessage);
         bool startBroadcasted = hostRoomModule.LastRoomStart != null && guestARoomModule.LastRoomStart != null;
+        bool matchIdReady = hostRoomModule.LastRoomStart != null &&
+            !string.IsNullOrWhiteSpace(hostRoomModule.LastRoomStart.matchId);
 
         hostRoomProxy.LeaveRoom();
         bool disbandBroadcasted = hostRoomModule.LastRoomDisband != null &&
@@ -104,6 +106,7 @@ public sealed class NetworkSyncRoomLocalDemo : MonoBehaviour {
             " | Players: " + joinedPlayerCount +
             " | AI: " + joinedAICount +
             " | Started: " + startBroadcasted +
+            " | MatchIdReady: " + matchIdReady +
             " | LateJoinFailed: " + lateJoinFailed +
             " | Disbanded: " + disbandBroadcasted;
         Debug.Log(lastDemoSummary);

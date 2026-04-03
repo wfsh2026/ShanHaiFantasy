@@ -8,6 +8,9 @@ public static class ServerModeFactory {
             case ModeType.Test:
                 gameWorld.AddExtendFeature<ServerTestModeManager>();
                 break;
+            case ModeType.Battle:
+                gameWorld.AddExtendFeature<ServerBattleModeManager>();
+                break;
         }
     }
 }

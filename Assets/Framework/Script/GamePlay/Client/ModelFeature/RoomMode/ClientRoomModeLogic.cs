@@ -1,19 +1,16 @@
+using System;
 using UnityEngine;
 
-/// <summary>
-/// A1 房间模式逻辑。
-/// 负责启动 Host / Client、发送房间命令，并把服务端状态转换为客户端 Data。
-/// </summary>
 public sealed class ClientRoomModeLogic : AbsModeLogic {
     private static readonly string[] PLAYER_NAME_POOL = {
-        "青岳",
-        "流云",
-        "惊鸿",
-        "清越",
-        "长风",
-        "司南",
-        "照影",
-        "无咎"
+        "QingYue",
+        "LiuYun",
+        "JingHong",
+        "QingYue2",
+        "ChangFeng",
+        "SiNan",
+        "ZhaoYing",
+        "WuQue"
     };
     private static readonly string[] PLAYER_AVATAR_POOL = {
         "avatar_player_01",
@@ -26,6 +23,7 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
     private ClientRoomNetProxy roomProxy;
     private NetworkSyncRoomClientModule roomClientModule;
     private NetworkSyncRoomServerModule roomServerModule;
+    private bool isEnteringBattleScene;
 
     public override void OnInit() {
         ClientRoomModeManager modeManager = manager as ClientRoomModeManager;
@@ -39,11 +37,15 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
 
     public override void OnClear() {
         UnregisterRoomModuleCallbacks();
-        NetworkSyncMirrorRoomRuntime.Instance.StopRuntime();
+        if (!isEnteringBattleScene) {
+            NetworkSyncMirrorRoomRuntime.Instance.StopRuntime();
+        }
+
         roomProxy = null;
         roomClientModule = null;
         roomServerModule = null;
         data = null;
+        isEnteringBattleScene = false;
     }
 
     public void CreateRoom() {
@@ -51,16 +53,15 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
             return;
         }
 
-        string inviteCode = NetworkSyncMirrorRoomRuntime.GenerateInviteCode();
         RoomLocalProfile localProfile = BuildLocalProfile(true);
-        data.SetWaitingStatus("正在创建房间...");
+        data.SetWaitingStatus("Creating room...");
 
         NetworkSyncMirrorRoomRuntime.Instance.StartHostRuntime(
             gameWorld,
-            inviteCode,
+            string.Empty,
             () => {
                 if (roomProxy != null) {
-                    roomProxy.CreateRoom(inviteCode, localProfile.DisplayName, localProfile.AvatarId);
+                    roomProxy.CreateRoom(string.Empty, localProfile.DisplayName, localProfile.AvatarId);
                 }
             },
             HandleOperationFailed);
@@ -72,12 +73,12 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
         }
 
         if (string.IsNullOrWhiteSpace(inviteCode)) {
-            HandleOperationFailed("连接失败");
+            HandleOperationFailed("Connect failed");
             return;
         }
 
         RoomLocalProfile localProfile = BuildLocalProfile(false);
-        data.SetWaitingStatus("正在连接房间...");
+        data.SetWaitingStatus("Joining room...");
         NetworkSyncMirrorRoomRuntime.Instance.StartClientRuntime(
             gameWorld,
             inviteCode.Trim(),
@@ -96,6 +97,7 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
 
         bool isHost = data.IsHostValue.Value;
         roomProxy.LeaveRoom();
+        isEnteringBattleScene = false;
 
         if (!isHost) {
             NetworkSyncMirrorRoomRuntime.Instance.StopRuntime();
@@ -108,7 +110,8 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
             return;
         }
 
-        data.SetWaitingStatus("正在进入战斗场景...");
+        data.SetWaitingStatus("Entering battle scene...");
+        isEnteringBattleScene = true;
         roomProxy.StartRoom();
     }
 
@@ -176,16 +179,15 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
             return;
         }
 
-        data.SetWaitingStatus("正在进入战斗场景...");
+        data.SetWaitingStatus("Entering battle scene...");
+        NetworkSyncMirrorRoomRuntime.Instance.PreserveRoomModules(roomClientModule, roomServerModule);
 
         ClientSceneFlowFeatureManager sceneFlowFeatureManager = gameWorld.GetExtendFeature<ClientSceneFlowFeatureManager>();
         if (sceneFlowFeatureManager == null || sceneFlowFeatureManager.SceneFlowManager == null) {
             return;
         }
 
-        SceneConfig config = sceneFlowFeatureManager.SceneFlowManager.GetCurrentSceneId() == SceneId.BattleTest
-            ? null
-            : new SceneRegistry().GetConfig(SceneId.BattleTest);
+        SceneConfig config = ResolveStartSceneConfig(sceneFlowFeatureManager.SceneFlowManager, startMessage);
         if (config == null) {
             return;
         }
@@ -194,18 +196,36 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
         sceneFlowFeatureManager.SceneFlowManager.LoadScene(request);
     }
 
+    private static SceneConfig ResolveStartSceneConfig(SceneFlowManager sceneFlowManager, NetworkSyncRoomStartRpc startMessage) {
+        if (sceneFlowManager == null || startMessage == null || string.IsNullOrWhiteSpace(startMessage.sceneId)) {
+            return null;
+        }
+
+        SceneId targetSceneId;
+        if (!Enum.TryParse(startMessage.sceneId.Trim(), true, out targetSceneId)) {
+            return null;
+        }
+
+        if (sceneFlowManager.GetCurrentSceneId() == targetSceneId) {
+            return null;
+        }
+
+        return new SceneRegistry().GetConfig(targetSceneId);
+    }
+
     private void OnRoomDisbanded(NetworkSyncRoomDisbandRpc message) {
         if (data == null) {
             return;
         }
 
+        isEnteringBattleScene = false;
         NetworkSyncMirrorRoomRuntime.Instance.StopRuntime();
         data.SetEntryState();
-        data.SetNoticeRequest("房间通知", message == null ? "房间已解散" : message.messageText, true);
+        data.SetNoticeRequest("Room Notice", message == null ? "Room has been disbanded" : message.messageText, true);
     }
 
     private void OnRoomOperationFailed(NetworkSyncRoomOperationFailedTargetRpc message) {
-        HandleOperationFailed(message == null ? "连接失败" : message.messageText);
+        HandleOperationFailed(message == null ? "Connect failed" : message.messageText);
     }
 
     private void HandleOperationFailed(string messageText) {
@@ -213,15 +233,16 @@ public sealed class ClientRoomModeLogic : AbsModeLogic {
             return;
         }
 
+        isEnteringBattleScene = false;
         NetworkSyncMirrorRoomRuntime.Instance.StopRuntime();
         data.SetEntryState();
-        data.SetNoticeRequest("提示", string.IsNullOrWhiteSpace(messageText) ? "连接失败" : messageText, true);
+        data.SetNoticeRequest("Notice", string.IsNullOrWhiteSpace(messageText) ? "Connect failed" : messageText, true);
     }
 
     private static RoomLocalProfile BuildLocalProfile(bool isHost) {
         RoomLocalProfile profile = new RoomLocalProfile();
-        int randomIndex = Random.Range(0, PLAYER_NAME_POOL.Length);
-        profile.DisplayName = PLAYER_NAME_POOL[randomIndex] + "_" + Random.Range(10, 99);
+        int randomIndex = UnityEngine.Random.Range(0, PLAYER_NAME_POOL.Length);
+        profile.DisplayName = PLAYER_NAME_POOL[randomIndex] + "_" + UnityEngine.Random.Range(10, 99);
         if (isHost) {
             profile.DisplayName = profile.DisplayName + "(Host)";
         }

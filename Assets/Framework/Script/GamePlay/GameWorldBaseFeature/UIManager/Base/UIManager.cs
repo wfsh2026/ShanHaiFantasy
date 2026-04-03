@@ -259,6 +259,24 @@ public sealed class UIManager : IUIManager {
             true,
             true,
             true);
+        registry.Register<BattleA2Panel>(
+            "BattleA2Panel",
+            UILayer.Normal,
+            UICacheMode.HideOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            true,
+            true,
+            true);
+        registry.Register<BattleQuickSetupPanel>(
+            "BattleQuickSetupPanel",
+            UILayer.HUD,
+            UICacheMode.HideOnClose,
+            UIOpenMode.Single,
+            string.Empty,
+            false,
+            false,
+            false);
         registry.Register<AdjustAttrPopup>(
             "AdjustAttrPopup",
             UILayer.Popup,

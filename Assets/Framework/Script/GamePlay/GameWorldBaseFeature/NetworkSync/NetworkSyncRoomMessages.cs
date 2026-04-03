@@ -67,6 +67,7 @@ public sealed class NetworkSyncRoomDisbandRpc : INetworkSyncRpc {
 
 [Serializable]
 public sealed class NetworkSyncRoomStartRpc : INetworkSyncRpc {
+    public string matchId;
     public string inviteCode;
     public string sceneId;
 }

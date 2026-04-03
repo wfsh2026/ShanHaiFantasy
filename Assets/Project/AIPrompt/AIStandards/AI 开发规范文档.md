@@ -349,22 +349,28 @@ AI 新增通用模块时，必须遵守以下流程：
 AI 处理 `GamePlay` 相关需求时，应遵守以下顺序：
 
 1. 先阅读本文档
-2. 再阅读 `Assets/Project/AIPrompt/AIStandards/代码规范.md`
-3. 再阅读 `Assets/Project/AIPrompt/AIStandards/目录规范.md`
-4. 若需求涉及 UI，再阅读 `Assets/Project/AIPrompt/AIStandards/AI UI 开发通用规范文档.md`
-5. 若需求涉及 Input，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 输入系统开发规范.md`
-6. 若需求涉及 SceneFlow，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 场景流转开发规范.md`
-7. 若需求涉及 Audio，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 音频开发规范.md`
-8. 若需求涉及 Config，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 配置文件创建规范.md`
-9. 若需求涉及 SaveData，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 存档开发规范文档.md`
-10. 若需求涉及 Camera，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 相机开发规范.md`
-11. 若需求涉及 Pool，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 对象池开发规范.md`
-12. 若需求涉及 GameWorld，再阅读 `Assets/Project/AIPrompt/AIStandards/AI GameWorld 开发规范.md`
-13. 若需求涉及 Mode，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Mode 开发规范.md`
-14. 若需求涉及 Addressables，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Addressables 开发规范.md`
-15. 若需求涉及 NetworkSync，再阅读 `Assets/Project/AIPrompt/AIStandards/AI NetworkSync 开发规范.md`
-16. 判断需求是否触碰主链或 Base
-17. 若触碰冻结层，必须先确认已获授权
+2. 若需求准备进入多 Agent 协作，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Agent 协作规范.md`
+3. 若本轮工作需要多 Agent 协作，先检查当前会话是否已存在标准协作包；若不存在，先重建：
+   - `lider`
+   - `project-2-code`
+   - `CodeAgent`
+   - `SkillCreateAgent`
+4. 再阅读 `Assets/Project/AIPrompt/AIStandards/代码规范.md`
+5. 再阅读 `Assets/Project/AIPrompt/AIStandards/目录规范.md`
+6. 若需求涉及 UI，再阅读 `Assets/Project/AIPrompt/AIStandards/AI UI 开发通用规范文档.md`
+7. 若需求涉及 Input，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 输入系统开发规范.md`
+8. 若需求涉及 SceneFlow，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 场景流转开发规范.md`
+9. 若需求涉及 Audio，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 音频开发规范.md`
+10. 若需求涉及 Config，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 配置文件创建规范.md`
+11. 若需求涉及 SaveData，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 存档开发规范文档.md`
+12. 若需求涉及 Camera，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 相机开发规范.md`
+13. 若需求涉及 Pool，再阅读 `Assets/Project/AIPrompt/AIStandards/AI 对象池开发规范.md`
+14. 若需求涉及 GameWorld，再阅读 `Assets/Project/AIPrompt/AIStandards/AI GameWorld 开发规范.md`
+15. 若需求涉及 Mode，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Mode 开发规范.md`
+16. 若需求涉及 Addressables，再阅读 `Assets/Project/AIPrompt/AIStandards/AI Addressables 开发规范.md`
+17. 若需求涉及 NetworkSync，再阅读 `Assets/Project/AIPrompt/AIStandards/AI NetworkSync 开发规范.md`
+18. 判断需求是否触碰主链或 Base
+19. 若触碰冻结层，必须先确认已获授权
 
 ---
 

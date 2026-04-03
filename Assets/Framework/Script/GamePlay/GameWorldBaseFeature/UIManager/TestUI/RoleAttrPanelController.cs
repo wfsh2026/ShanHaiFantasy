@@ -31,7 +31,9 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
         data.RunningTimeValue.Bind(OnRunningTimeChanged, true);
         data.HPValue.Bind(OnHPChanged, true);
         data.MPValue.Bind(OnMPChanged, true);
-        panel.RefreshNetworkDemoResult(NetworkSyncRoleFireLocalDemo.EnsureInstance().LastDemoSummary);
+        panel.RefreshNetworkDemoResult(BuildNetworkDemoSummary(
+            NetworkSyncRoomLocalDemo.EnsureInstance().LastDemoSummary,
+            NetworkSyncBattleLocalDemo.EnsureInstance().LastDemoSummary));
     }
 
     public override void Unbind() {
@@ -144,14 +146,16 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
 
     public void RunNetworkDemo() {
         AudioManager.Instance.PlayUISfx("ui_click");
-        NetworkSyncRoomLocalDemo demo = NetworkSyncRoomLocalDemo.EnsureInstance();
-        if (demo == null) {
+        NetworkSyncRoomLocalDemo roomDemo = NetworkSyncRoomLocalDemo.EnsureInstance();
+        NetworkSyncBattleLocalDemo battleDemo = NetworkSyncBattleLocalDemo.EnsureInstance();
+        if (roomDemo == null || battleDemo == null) {
             panel.RefreshNetworkDemoResult("Create demo failed.");
             return;
         }
 
-        string result = demo.RunRoomLifecycleDemoOnce();
-        panel.RefreshNetworkDemoResult(result);
+        string roomResult = roomDemo.RunRoomLifecycleDemoOnce();
+        string battleResult = battleDemo.RunBattleSnapshotDemoOnce();
+        panel.RefreshNetworkDemoResult(BuildNetworkDemoSummary(roomResult, battleResult));
     }
 
     private void OnPopupResult(AdjustAttrPopupResult result) {
@@ -248,5 +252,17 @@ public sealed class RoleAttrPanelController : UIControllerBase<RoleAttrPanel> {
 
     private static void PlayUIButtonSound() {
         AudioManager.Instance.PlayUISfx("ui_click");
+    }
+
+    private static string BuildNetworkDemoSummary(string roomResult, string battleResult) {
+        return "Room: " + NormalizeDemoSummary(roomResult) + " | Battle: " + NormalizeDemoSummary(battleResult);
+    }
+
+    private static string NormalizeDemoSummary(string result) {
+        if (string.IsNullOrWhiteSpace(result)) {
+            return "None";
+        }
+
+        return result.Replace("\r", " ").Replace("\n", " ").Trim();
     }
 }

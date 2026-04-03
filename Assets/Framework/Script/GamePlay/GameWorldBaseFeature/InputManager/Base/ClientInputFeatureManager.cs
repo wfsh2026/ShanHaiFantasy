@@ -1,12 +1,11 @@
 /// <summary>
-/// 输入系统的客户端挂载入口。
-/// 负责创建输入管理器、注册默认 Handler，并根据 UI 状态切换上下文。
-/// </summary>
+/// 杈撳叆绯荤粺鐨勫鎴风鎸傝浇鍏ュ彛銆?/// 璐熻矗鍒涘缓杈撳叆绠＄悊鍣ㄣ€佹敞鍐岄粯璁?Handler锛屽苟鏍规嵁 UI 鐘舵€佸垏鎹笂涓嬫枃銆?/// </summary>
 public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     private InputManager inputManager;
     private GlobalInputHandler globalInputHandler;
     private PopupInputHandler popupInputHandler;
     private UIInputHandler uiInputHandler;
+    private bool isExternalBlockActive;
 
     public InputManager InputManager {
         get {
@@ -19,6 +18,7 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
         globalInputHandler = new GlobalInputHandler();
         popupInputHandler = new PopupInputHandler();
         uiInputHandler = new UIInputHandler();
+        isExternalBlockActive = false;
 
         inputManager.RegisterHandler(InputContextType.Popup, popupInputHandler, 100);
         inputManager.RegisterHandler(InputContextType.UI, uiInputHandler, 90);
@@ -41,6 +41,7 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
         globalInputHandler = null;
         popupInputHandler = null;
         uiInputHandler = null;
+        isExternalBlockActive = false;
         inputManager = null;
     }
 
@@ -53,6 +54,13 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
     public void UnregisterHandler(InputContextType contextType, IInputHandler handler) {
         if (inputManager != null) {
             inputManager.UnregisterHandler(contextType, handler);
+        }
+    }
+
+    public void SetExternalBlockActive(bool isActive) {
+        isExternalBlockActive = isActive;
+        if (inputManager != null) {
+            inputManager.SetContextActive(InputContextType.Block, isExternalBlockActive);
         }
     }
 
@@ -69,8 +77,8 @@ public sealed class ClientInputFeatureManager : AbsExtendGameWorldFeature {
         bool hasPopup = UIManager.Instance.IsOpen<AdjustAttrPopup>();
         bool hasMainPanel = UIManager.Instance.IsOpen<RoleAttrPanel>();
 
-        // 当前示例里上下文优先级固定为 Block > Popup > UI > Global > Mode。
-        inputManager.SetContextActive(InputContextType.Block, false);
+        // 褰撳墠绀轰緥閲屼笂涓嬫枃浼樺厛绾у浐瀹氫负 Block > Popup > UI > Global > Mode銆?
+        inputManager.SetContextActive(InputContextType.Block, isExternalBlockActive);
         inputManager.SetContextActive(InputContextType.Popup, hasPopup);
         inputManager.SetContextActive(InputContextType.UI, hasPopup || hasMainPanel);
         inputManager.SetContextActive(InputContextType.Global, true);

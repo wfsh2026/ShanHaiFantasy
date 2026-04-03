@@ -59,12 +59,15 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
 
     private readonly Dictionary<int, int> slotIndexByConnectionId = new Dictionary<int, int>();
     private readonly string battleSceneId;
+    private readonly bool allowCreateInviteCodeFallback;
     private NetworkSyncServer server;
     private RoomRuntimeState roomState;
     private int currentWorldId;
+    private string currentMatchId;
 
-    public NetworkSyncRoomServerModule(string battleSceneId = "BattleTest") {
+    public NetworkSyncRoomServerModule(string battleSceneId = "BattleTest", bool allowCreateInviteCodeFallback = false) {
         this.battleSceneId = string.IsNullOrWhiteSpace(battleSceneId) ? "BattleTest" : battleSceneId;
+        this.allowCreateInviteCodeFallback = allowCreateInviteCodeFallback;
     }
 
     public string CurrentInviteCode {
@@ -86,6 +89,18 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
     public bool HasStarted {
         get {
             return roomState != null && roomState.HasStarted;
+        }
+    }
+
+    public string CurrentMatchId {
+        get {
+            return string.IsNullOrWhiteSpace(currentMatchId) ? string.Empty : currentMatchId;
+        }
+    }
+
+    public int CurrentWorldId {
+        get {
+            return currentWorldId;
         }
     }
 
@@ -194,13 +209,14 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
 
     private void HandleCreateRoomCmd(NetworkSyncServerContext context, NetworkSyncRoomCreateCmd message) {
         currentWorldId = context.CurrentWorldId;
-        if (roomState != null || string.IsNullOrWhiteSpace(message.inviteCode)) {
+        string inviteCode = ResolveInviteCode(message);
+        if (roomState != null || string.IsNullOrWhiteSpace(inviteCode)) {
             SendOperationFailed(context, DEFAULT_FAIL_MESSAGE);
             return;
         }
 
         roomState = new RoomRuntimeState();
-        roomState.InviteCode = message.inviteCode.Trim();
+        roomState.InviteCode = inviteCode;
         roomState.HasStarted = false;
         slotIndexByConnectionId.Clear();
 
@@ -304,9 +320,12 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
             return;
         }
 
+        string matchId = BuildMatchId(roomState.InviteCode);
+        currentMatchId = matchId;
         roomState.HasStarted = true;
         BroadcastRoomState();
         server.Rpc(new NetworkSyncRoomStartRpc {
+            matchId = matchId,
             inviteCode = roomState.InviteCode,
             sceneId = battleSceneId
         }, currentWorldId, IsRoomConnection);
@@ -372,6 +391,37 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
         }
 
         return message;
+    }
+
+    public NetworkSyncRoomStateRpc GetRoomStateSnapshot() {
+        if (roomState == null) {
+            return null;
+        }
+
+        return BuildRoomStateRpc();
+    }
+
+    public bool TryGetPlayerIdByConnectionId(int connectionId, out string playerId) {
+        playerId = string.Empty;
+        if (connectionId < 0) {
+            return false;
+        }
+
+        if (!slotIndexByConnectionId.TryGetValue(connectionId, out int slotIndex)) {
+            return false;
+        }
+
+        if (roomState == null || slotIndex < 0 || slotIndex >= roomState.Slots.Count) {
+            return false;
+        }
+
+        RoomSlotRuntime slot = roomState.Slots[slotIndex];
+        if (slot == null || string.IsNullOrWhiteSpace(slot.PlayerId)) {
+            return false;
+        }
+
+        playerId = slot.PlayerId;
+        return true;
     }
 
     private int FindFirstAISlotIndex() {
@@ -446,9 +496,28 @@ public sealed class NetworkSyncRoomServerModule : INetworkSyncServerModule {
         return slotIndexByConnectionId.ContainsKey(connection.ConnectionId);
     }
 
+    private string ResolveInviteCode(NetworkSyncRoomCreateCmd message) {
+        string runtimeInviteCode = NetworkSyncMirrorRoomRuntime.Instance.CurrentInviteCode;
+        if (!string.IsNullOrWhiteSpace(runtimeInviteCode)) {
+            return runtimeInviteCode.Trim();
+        }
+
+        if (!allowCreateInviteCodeFallback || message == null || string.IsNullOrWhiteSpace(message.inviteCode)) {
+            return string.Empty;
+        }
+
+        return message.inviteCode.Trim();
+    }
+
+    private static string BuildMatchId(string inviteCode) {
+        string resolvedInviteCode = string.IsNullOrWhiteSpace(inviteCode) ? "room" : inviteCode.Trim();
+        return "match_" + resolvedInviteCode + "_" + DateTime.UtcNow.Ticks;
+    }
+
     private void ClearRoom() {
         slotIndexByConnectionId.Clear();
         roomState = null;
         currentWorldId = 0;
+        currentMatchId = string.Empty;
     }
 }

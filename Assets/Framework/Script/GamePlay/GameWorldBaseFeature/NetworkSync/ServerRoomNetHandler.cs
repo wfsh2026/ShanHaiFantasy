@@ -48,4 +48,32 @@ public sealed class ServerRoomNetHandler {
             return roomModule.HasStarted;
         }
     }
+
+    public int CurrentWorldId {
+        get {
+            if (roomModule == null) {
+                return 0;
+            }
+
+            return roomModule.CurrentWorldId;
+        }
+    }
+
+    public string CurrentMatchId {
+        get {
+            if (roomModule == null) {
+                return string.Empty;
+            }
+
+            return roomModule.CurrentMatchId;
+        }
+    }
+
+    public NetworkSyncRoomStateRpc GetRoomStateSnapshot() {
+        if (roomModule == null) {
+            return null;
+        }
+
+        return roomModule.GetRoomStateSnapshot();
+    }
 }

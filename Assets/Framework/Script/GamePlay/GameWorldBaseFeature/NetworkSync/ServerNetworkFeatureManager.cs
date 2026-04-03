@@ -21,6 +21,10 @@ public sealed class ServerNetworkFeatureManager : AbsExtendGameWorldFeature {
         }
     }
 
+    protected override void OnInit() {
+        NetworkSyncMirrorRoomRuntime.TryAttachWorld(gameWorld);
+    }
+
     protected override void OnRemove() {
         UnbindRuntime();
         pendingModules.Clear();
@@ -64,6 +68,19 @@ public sealed class ServerNetworkFeatureManager : AbsExtendGameWorldFeature {
         if (networkServer != null) {
             networkServer.RegisterModule(module);
         }
+    }
+
+    public bool TryGetModule<T>(out T module) where T : class, INetworkSyncServerModule {
+        for (int i = 0; i < pendingModules.Count; i++) {
+            T typedModule = pendingModules[i] as T;
+            if (typedModule != null) {
+                module = typedModule;
+                return true;
+            }
+        }
+
+        module = null;
+        return false;
     }
 
     private void RegisterPendingModules() {
